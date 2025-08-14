@@ -24,9 +24,9 @@ export class ProductsService implements IProductsService {
 
   async create(
     dto: CreateProductDto,
-    files: Express.Multer.File[],
+    files: Express.Multer.File,
   ): Promise<ResData<Product>> {
-    if (!files || files.length === 0) {
+    if (!files) {
       throw new FileIsMissinExeption();
     }
     const checkCategory = await this.categoryRepository.findById(
@@ -36,17 +36,11 @@ export class ProductsService implements IProductsService {
       throw new CategoryNotFoundException();
     }
     
-    const images = await Promise.all(
-      files.map(async (file) => {
-        const filename = await this.fileService.saveFile(file);
-        return `${process.env.BASE_URL}files/${filename}`;
-      }),
-    );
-    console.log(images);
+    const fileName = await this.fileService.saveFile(files)
+    dto.images = `${process.env.BASE_URL}files/${fileName}`;
 
     const newProduct = new Product();
     Object.assign(newProduct, dto);
-    newProduct.images = images;
     newProduct.category = checkCategory;
     const data = await this.productRepository.create(newProduct);
     return new ResData<Product>('Product created successfully', 201, data);
@@ -81,7 +75,7 @@ export class ProductsService implements IProductsService {
   async update(
     id: string,
     dto: UpdateProductDto,
-    files: Express.Multer.File[],
+    files: Express.Multer.File,
   ): Promise<ResData<Product>> {
     const foundData = await this.productRepository.findById(id);
     if (!foundData) {
@@ -97,17 +91,10 @@ export class ProductsService implements IProductsService {
       foundData.category = checkCategory;
     }
     if (files) {
-      foundData.images.forEach((image) => {
-        const fileName = path.basename(image);
-        this.fileService.deleteFile(fileName);
-      });
-      const images = await Promise.all(
-        files.map(async (file) => {
-          const filename = await this.fileService.saveFile(file);
-          return `${process.env.BASE_URL}files/${filename}`;
-        }),
-      );
-      foundData.images = images;
+      const fileName = path.basename(foundData.images);
+      await this.fileService.deleteFile(fileName);
+      const newFileName = await this.fileService.saveFile(files);
+      dto.images = `${process.env.BASE_URL}files/${newFileName}`;
     }
     Object.assign(foundData, dto);
     const data = await this.productRepository.update(foundData);
@@ -119,10 +106,8 @@ export class ProductsService implements IProductsService {
     if (!foundData) {
       throw new ProductNotFoundExeption();
     }
-    foundData.images.forEach(async (image) => {
-      const fileName = path.basename(image);
-      await this.fileService.deleteFile(fileName);
-    });
+    const fileName = path.basename(foundData.images);
+    await this.fileService.deleteFile(fileName);
     await this.productRepository.delete(foundData);
     return new ResData<Product>('Product deleted successfully', 200, foundData);
   }

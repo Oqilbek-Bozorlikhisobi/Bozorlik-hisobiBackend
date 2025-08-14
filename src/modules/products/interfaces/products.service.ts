@@ -7,7 +7,7 @@ import { Product } from "../entities/product.entity";
 export interface IProductsService {
   create(
     dto: CreateProductDto,
-    files: Express.Multer.File[],
+    files: Express.Multer.File,
   ): Promise<ResData<Product>>;
   findAll(query: QuerySearchDto): Promise<
     ResData<{
@@ -21,7 +21,7 @@ export interface IProductsService {
   update(
     id: string,
     dto: UpdateProductDto,
-    files: Express.Multer.File[],
+    files: Express.Multer.File,
   ): Promise<ResData<Product>>;
   delete(id: string): Promise<ResData<Product>>;
 }

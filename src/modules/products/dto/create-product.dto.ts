@@ -31,12 +31,11 @@ export class CreateProductDto {
   @IsUUID()
   categoryId: string;
 
-  @IsArray()
   @IsOptional()
-  images: string[];
+  images: string;
 
   @ApiProperty({
-    description: 'png, ppt, wbep formatdagi fayl',
+    description: 'png, ppt, wbep formatdagi fayl, faqat bitta rasm yuklanadi',
     type: 'string',
     format: 'binary',
     isArray: true,

@@ -17,6 +17,6 @@ export class Product extends BaseEntity {
   @JoinColumn({ name: 'category_id' })
   category: Category;
 
-  @Column({ type: 'varchar', array: true, name: 'images' })
-  images: string[];
+  @Column({ type: 'varchar', name: 'images' })
+  images: string;
 }
