@@ -15,6 +15,7 @@ import { CategoryModule } from './modules/category/category.module';
 import { ProductsModule } from './modules/products/products.module';
 import { UserModule } from './modules/user/user.module';
 import { SmsModule } from './modules/sms/sms.module';
+import { MarketModule } from './modules/market/market.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { SmsModule } from './modules/sms/sms.module';
     ProductsModule,
     UserModule,
     SmsModule,
+    MarketModule,
   ],
   providers: [JwtStrategy],
 })

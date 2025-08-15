@@ -1,5 +1,6 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, ManyToMany, OneToMany } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity';
+import { Market } from '../../market/entities/market.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -20,4 +21,7 @@ export class User extends BaseEntity {
 
   @Column({ type: 'varchar', name: 'hashed_refresh_token', nullable: true })
   hashedRefreshToken: string;
+
+  @ManyToMany(() => Market, (markets) => markets.users)
+  markets: Market[]
 }

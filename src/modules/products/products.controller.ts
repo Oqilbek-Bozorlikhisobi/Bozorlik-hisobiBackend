@@ -1,5 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, UseInterceptors, UploadedFiles, Query, UploadedFile } from '@nestjs/common';
-import { ProductsService } from './products.service';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Inject,
+  UseInterceptors,
+  Query,
+  UploadedFile,
+} from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ApiConsumes, ApiQuery, ApiTags } from '@nestjs/swagger';
@@ -29,7 +40,7 @@ export class ProductsController {
   @ApiQuery({ name: 'search', required: false })
   @ApiQuery({ name: 'page', required: false })
   @ApiQuery({ name: 'limit', required: false })
-  findAll(@Query() query:QuerySearchDto) {
+  findAll(@Query() query: QuerySearchDto) {
     return this.productsService.findAll(query);
   }
 
