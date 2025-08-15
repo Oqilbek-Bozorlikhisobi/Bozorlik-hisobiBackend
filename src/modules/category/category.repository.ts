@@ -1,7 +1,8 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { ICategoryRepository } from './interfaces/category.repository';
 import { Category } from './entities/category.entity';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
+import { QuerySearchDto } from './dto/query-search.dto';
 
 export class CategoryRepository implements ICategoryRepository {
   constructor(
@@ -10,11 +11,44 @@ export class CategoryRepository implements ICategoryRepository {
   ) {}
 
   async create(dto: Category): Promise<Category> {
-    return await this.categoryRepository.save(dto);
+    const newCategory = await this.categoryRepository.save(dto)
+    return newCategory
   }
 
-  async findAll(): Promise<Array<Category>> {
-    return await this.categoryRepository.find();
+  async findAll(
+    query: QuerySearchDto,
+  ): Promise<{ data: Category[]; total: number; page: number; limit: number }> {
+    const { search = '', page = 1, limit } = query;
+
+    const where = [
+      { titleEn: ILike(`%${search}%`) },
+      { titleRu: ILike(`%${search}%`) },
+      { titleUz: ILike(`%${search}%`) },
+    ];
+
+    let data: Category[];
+    let total: number;
+
+    if (limit && limit > 0) {
+      [data, total] = await this.categoryRepository.findAndCount({
+        where,
+        relations: { products: true },
+        skip: (page - 1) * limit,
+        take: limit,
+      });
+    } else {
+      [data, total] = await this.categoryRepository.findAndCount({
+        where,
+        relations: { products: true },
+      });
+    }
+
+    return {
+      data,
+      total,
+      page,
+      limit: limit && limit > 0 ? limit : total, // null o‘rniga total yoki 0
+    };
   }
 
   async findById(id: string): Promise<Category | null> {

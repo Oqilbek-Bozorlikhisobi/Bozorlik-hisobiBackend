@@ -21,25 +21,32 @@ export class ProductRepository implements IProductsRepository {
     page: number;
     limit: number;
   }> {
-    const { search = '', page = 1, limit = 10 } = query;
+    const { search = '', page = 1, limit } = query;
 
-    const [data, total] = await this.productRepository.findAndCount({
-      where: [
-        { titleEn: ILike(`%${search}`) },
-        { titleRu: ILike(`%${search}`) },
-        { titleUz: ILike(`%${search}`) },
-      ],
-      relations: {
-        category: true,
-      },
-      skip: (page - 1) * limit,
-      take: limit,
-    });
+    const qb = this.productRepository
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.category', 'category');
+
+    if (search) {
+      qb.andWhere(
+        '(product.titleEn ILIKE :search OR product.titleRu ILIKE :search OR product.titleUz ILIKE :search)',
+        { search: `%${search}%` },
+      );
+    }
+
+    // Limit kelsa pagination qo‘llanadi
+    if (limit && limit > 0) {
+      qb.skip((page - 1) * limit).take(limit);
+    }
+
+
+    const [data, total] = await qb.getManyAndCount();
+
     return {
       data,
       total,
       page,
-      limit,
+      limit: limit && limit > 0 ? limit : total, // agar limit bo‘lmasa, hammasini chiqaradi
     };
   }
 

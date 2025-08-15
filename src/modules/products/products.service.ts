@@ -7,7 +7,10 @@ import { ICategoryRepository } from '../category/interfaces/category.repository'
 import { IProductsService } from './interfaces/products.service';
 import { ResData } from '../../common/lib/resData';
 import { Product } from './entities/product.entity';
-import { FileIsMissinExeption, ProductNotFoundExeption } from './exeptions/products.exeption';
+import {
+  FileIsMissinExeption,
+  ProductNotFoundExeption,
+} from './exeptions/products.exeption';
 import { CategoryNotFoundException } from '../category/exeptions/category.exeption';
 import * as path from 'node:path';
 import { QuerySearchDto } from './dto/query-search.dto';
@@ -35,8 +38,8 @@ export class ProductsService implements IProductsService {
     if (!checkCategory) {
       throw new CategoryNotFoundException();
     }
-    
-    const fileName = await this.fileService.saveFile(files)
+
+    const fileName = await this.fileService.saveFile(files);
     dto.images = `${process.env.BASE_URL}files/${fileName}`;
 
     const newProduct = new Product();
@@ -59,7 +62,7 @@ export class ProductsService implements IProductsService {
     return new ResData('ok', 200, {
       items: data.data,
       page: data.page,
-      limit: data.limit,
+      limit: data.limit ?? 0, // null bo‘lsa 0
       total: data.total,
     });
   }
