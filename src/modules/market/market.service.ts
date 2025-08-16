@@ -6,7 +6,10 @@ import { IMarketRepository } from './interfaces/market.repository';
 import { ResData } from '../../common/lib/resData';
 import { Market } from './entities/market.entity';
 import { IUserRepository } from '../user/interfaces/user.repository';
-import { UserAlreadyExists, UserNotFound } from '../user/exeptions/user.esxeption';
+import {
+  UserAlreadyExists,
+  UserNotFound,
+} from '../user/exeptions/user.esxeption';
 import { MarketNotFoundException } from './exeptions/market.exeption';
 import { AddUserDto } from './dto/add-user.dto';
 import { GetMarketByUserIdDto } from './dto/get-market-by-user-id.dto';
@@ -21,21 +24,45 @@ export class MarketService implements IMarketService {
   ) {}
 
   async create(dto: CreateMarketDto): Promise<ResData<Market>> {
-    const user = await this.userRepository.findOneById(dto.userId)
+    const user = await this.userRepository.findOneById(dto.userId);
     if (!user) {
-      throw new UserNotFound()
+      throw new UserNotFound();
     }
-    const newMarket = new Market()
-    Object.assign(newMarket, dto)
-    newMarket.users = [user]
+    const newMarket = new Market();
+    Object.assign(newMarket, dto);
+    newMarket.users = [user];
 
-    const data = await this.marketRepository.create(newMarket)
+    const data = await this.marketRepository.create(newMarket);
 
-    return new ResData<Market>('Market created successfully', 201, data)
+    return new ResData<Market>('Market created successfully', 201, data);
   }
 
   async findAll(dto: GetMarketByUserIdDto): Promise<ResData<Array<Market>>> {
-    const data = await this.marketRepository.findAll(dto.search)
+    const data = await this.marketRepository.findAll(dto.search);
+    data.forEach((market) => {
+      if (market.marketLists && market.marketLists.length > 0) {
+        // Hamma isBuying true bo‘lsa
+        const allBought = market.marketLists.every(
+          (marketList) => marketList.isBuying === true,
+        );
+        market.isAllBuy = allBought;
+
+        // Faqat isBuying = true bo‘lganlarni total price hisoblash
+        const totalPrice = market.marketLists
+          .filter((ml) => ml.isBuying)
+          .reduce((sum, ml) => {
+            const price = Number(ml.price ?? 0);
+            const quantity = Number(ml.quantity ?? 1);
+            return sum + price * quantity;
+          }, 0);
+
+        // DBda yo‘q bo‘lsa response uchun qo‘shib qo‘yish
+        (market as any).totalPrice = totalPrice;
+      } else {
+        market.isAllBuy = false;
+        (market as any).totalPrice = 0;
+      }
+    });
     return new ResData<Array<Market>>('ok', 200, data);
   }
 
@@ -53,11 +80,11 @@ export class MarketService implements IMarketService {
       throw new MarketNotFoundException();
     }
     if (dto.userId) {
-      const user = await this.userRepository.findOneById(dto.userId)
+      const user = await this.userRepository.findOneById(dto.userId);
       if (!user) {
-        throw new UserNotFound()
+        throw new UserNotFound();
       }
-      foundData.users = [user]
+      foundData.users = [user];
     }
     Object.assign(foundData, dto);
     const data = await this.marketRepository.update(foundData);
@@ -65,21 +92,23 @@ export class MarketService implements IMarketService {
   }
 
   async addUser(addUserDto: AddUserDto): Promise<ResData<Market>> {
-    const user = await this.userRepository.findByPhoneNumber(addUserDto.phoneNumber)
+    const user = await this.userRepository.findByPhoneNumber(
+      addUserDto.phoneNumber,
+    );
     if (!user) {
-      throw new UserNotFound()
+      throw new UserNotFound();
     }
-    const market = await this.marketRepository.findById(addUserDto.marketId)
+    const market = await this.marketRepository.findById(addUserDto.marketId);
     if (!market) {
-      throw new MarketNotFoundException()
+      throw new MarketNotFoundException();
     }
     const alreadyExists = market.users.some((u) => u.id === user.id);
     if (!alreadyExists) {
       market.users.push(user);
-    }else {
-      throw new UserAlreadyExists()
+    } else {
+      throw new UserAlreadyExists();
     }
-    const data = await this.marketRepository.update(market)
+    const data = await this.marketRepository.update(market);
     return new ResData<Market>('ok', 200, data);
   }
 

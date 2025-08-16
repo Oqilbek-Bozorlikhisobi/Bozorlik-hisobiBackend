@@ -25,6 +25,12 @@ export class Market extends BaseEntity {
   })
   users: User[]
 
-  @OneToMany(() => MarketList, (marketList) => marketList.market)
+  @OneToMany(() => MarketList, (marketList) => marketList.market, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   marketLists: MarketList[];
+
+  @Column({type: 'decimal', precision: 10, scale: 2 ,name: 'total_price', nullable:true})
+  totalPrice: number;
 }
