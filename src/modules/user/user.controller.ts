@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Inject } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { QuerySearchDto } from './dto/query-search.dto';
 
 @ApiTags('User')
 @Controller('user')
@@ -15,8 +16,9 @@ export class UserController {
   }
 
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  @ApiQuery({ name: 'search', required: false })
+  findAll(@Query() query: QuerySearchDto) {
+    return this.userService.findAll(query);
   }
 
   @Get(':id')

@@ -9,6 +9,7 @@ import { IUserRepository } from '../user/interfaces/user.repository';
 import { UserAlreadyExists, UserNotFound } from '../user/exeptions/user.esxeption';
 import { MarketNotFoundException } from './exeptions/market.exeption';
 import { AddUserDto } from './dto/add-user.dto';
+import { GetMarketByUserIdDto } from './dto/get-market-by-user-id.dto';
 
 @Injectable()
 export class MarketService implements IMarketService {
@@ -33,8 +34,8 @@ export class MarketService implements IMarketService {
     return new ResData<Market>('Market created successfully', 201, data)
   }
 
-  async findAll(): Promise<ResData<Array<Market>>> {
-    const data = await this.marketRepository.findAll()
+  async findAll(dto: GetMarketByUserIdDto): Promise<ResData<Array<Market>>> {
+    const data = await this.marketRepository.findAll(dto.search)
     return new ResData<Array<Market>>('ok', 200, data);
   }
 

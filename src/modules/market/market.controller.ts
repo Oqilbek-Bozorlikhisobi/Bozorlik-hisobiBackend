@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Inject } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, Query } from '@nestjs/common';
 import { MarketService } from './market.service';
 import { CreateMarketDto } from './dto/create-market.dto';
 import { UpdateMarketDto } from './dto/update-market.dto';
 import { IMarketService } from './interfaces/market.service';
 import { AddUserDto } from './dto/add-user.dto';
+import { GetMarketByUserIdDto } from './dto/get-market-by-user-id.dto';
+import { ApiQuery } from '@nestjs/swagger';
 
 @Controller('market')
 export class MarketController {
@@ -17,8 +19,9 @@ export class MarketController {
   }
 
   @Get()
-  findAll() {
-    return this.marketService.findAll();
+  @ApiQuery({ name: 'search', required: false })
+  findAll(@Query() dto: GetMarketByUserIdDto) {
+    return this.marketService.findAll(dto);
   }
 
   @Get(':id')

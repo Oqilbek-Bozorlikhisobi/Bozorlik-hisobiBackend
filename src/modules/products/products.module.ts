@@ -14,5 +14,9 @@ import { FileModule } from '../file/file.module';
     { provide: 'IProductsService', useClass: ProductsService },
     { provide: 'IProductsRepository', useClass: ProductRepository },
   ],
+  exports: [
+    { provide: 'IProductsService', useClass: ProductsService },
+    { provide: 'IProductsRepository', useClass: ProductRepository },
+  ],
 })
 export class ProductsModule {}

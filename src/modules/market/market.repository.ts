@@ -13,14 +13,25 @@ export class MarketRepository implements IMarketRepository {
     return await this.marketRepository.save(entity);
   }
 
-  async findAll(): Promise<Market[]> {
+  async findAll(search: string): Promise<Market[]> {
+    const whereCondition = search ? { users: { id: search } } : {};
     return await this.marketRepository.find({
-        relations: ['users']
+      where: whereCondition,
+      relations: {
+        users: true,
+        marketLists: {
+          product: true,
+          user: true,
+        },
+      },
     });
   }
 
   async findById(id: string): Promise<Market | null> {
-    return await this.marketRepository.findOne({ where: { id }, relations: ['users'] });
+    return await this.marketRepository.findOne({
+      where: { id },
+      relations: ['users'],
+    });
   }
 
   async update(entity: Market): Promise<Market> {

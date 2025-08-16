@@ -12,6 +12,7 @@ import {
   UserNotFound,
 } from './exeptions/user.esxeption';
 import { hash } from 'bcrypt';
+import { QuerySearchDto } from './dto/query-search.dto';
 
 @Injectable()
 export class UserService implements IUserService {
@@ -42,8 +43,8 @@ export class UserService implements IUserService {
     return new ResData<User>('User register successfully', 201, newData);
   }
 
-  async findAll(): Promise<ResData<Array<User>>> {
-    const data = await this.userRepository.findAll();
+  async findAll(query: QuerySearchDto): Promise<ResData<Array<User>>> {
+    const data = await this.userRepository.findAll(query);
     return new ResData<Array<User>>('Success', 200, data);
   }
 

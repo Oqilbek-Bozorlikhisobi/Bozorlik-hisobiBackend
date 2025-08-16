@@ -1,11 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Inject } from '@nestjs/common';
 import { MarketListService } from './market_list.service';
 import { CreateMarketListDto } from './dto/create-market_list.dto';
 import { UpdateMarketListDto } from './dto/update-market_list.dto';
+import { IMarketListService } from './interfaces/market-list.service';
+import { CheckListDto } from './dto/check-list.dto';
 
 @Controller('market-list')
 export class MarketListController {
-  constructor(private readonly marketListService: MarketListService) {}
+  constructor(
+    @Inject('IMarketListService')
+    private readonly marketListService: IMarketListService,
+  ) {}
 
   @Post()
   create(@Body() createMarketListDto: CreateMarketListDto) {
@@ -19,16 +24,19 @@ export class MarketListController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.marketListService.findOne(+id);
+    return this.marketListService.findOneById(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMarketListDto: UpdateMarketListDto) {
-    return this.marketListService.update(+id, updateMarketListDto);
+  @Patch('check-is-buying/:id')
+  checkMarketListIsBuying(
+    @Param('id') id: string,
+    @Body() dto: CheckListDto,
+  ) {
+    return this.marketListService.checkMarketListIsBuying(id, dto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.marketListService.remove(+id);
+    return this.marketListService.delete(id);
   }
 }

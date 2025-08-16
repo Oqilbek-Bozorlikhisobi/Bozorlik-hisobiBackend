@@ -1,6 +1,7 @@
-import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity';
 import { User } from '../../user/entities/user.entity';
+import { MarketList } from '../../market_list/entities/market_list.entity';
 
 @Entity('market')
 export class Market extends BaseEntity {
@@ -23,4 +24,7 @@ export class Market extends BaseEntity {
     },
   })
   users: User[]
+
+  @OneToMany(() => MarketList, (marketList) => marketList.market)
+  marketLists: MarketList[];
 }
