@@ -73,7 +73,7 @@ export class SmsService {
     data.append('mobile_phone', phone_number.replace(/\D/g, ''));
     // Tasdiqlash kodingiz: ${otp} (5 daqiqa amal qiladi)
     data.append('message', `This is test from Eskiz`);
-    data.append('from', '4546');
+    // data.append('from', '4546');
 
     try {
       const res = await axios.post(

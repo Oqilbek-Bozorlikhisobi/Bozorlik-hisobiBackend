@@ -24,3 +24,9 @@ export class PasswordOrconfirmPassowrdDidntExists extends HttpException {
     super('Password or confirmPassword did not exists', HttpStatus.BAD_REQUEST);
   }
 }
+
+export class SmsNotSendedExeption extends HttpException {
+  constructor() {
+    super('Sms not sended', HttpStatus.BAD_REQUEST);
+  }
+}

@@ -116,11 +116,6 @@ export class AuthService {
   }
 
   async registerUser(data: CreateUserDto, res: Response) {
-    const newUser = await this.userService.create(data);
-    if (!newUser) {
-      throw new BadRequestException('User not created');
-    }
-
     const OTP = generateOTP();
     const now = new Date();
     const expirationTime = AddMinutesToDate(now, 5);
@@ -144,10 +139,14 @@ export class AuthService {
       await this.smsService.sendSms(data.phoneNumber, String(OTP));
     } catch (error) {
       console.log(error);
-
       return {
         message: 'Sms not sent',
       };
+    }
+    
+    const newUser = await this.userService.create(data);
+    if (!newUser) {
+      throw new BadRequestException('User not created');
     }
 
     return {
