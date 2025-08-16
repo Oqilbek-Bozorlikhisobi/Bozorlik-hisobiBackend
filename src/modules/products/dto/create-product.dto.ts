@@ -38,9 +38,8 @@ export class CreateProductDto {
     description: 'png, ppt, wbep formatdagi fayl, faqat bitta rasm yuklanadi',
     type: 'string',
     format: 'binary',
-    isArray: true,
     required: false,
   })
   @IsOptional()
-  files?: Express.Multer.File[];
+  files?: Express.Multer.File;
 }

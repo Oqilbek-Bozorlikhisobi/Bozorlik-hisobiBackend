@@ -8,13 +8,16 @@ import {
   Delete,
   Inject,
   Query,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { ICategoryService } from './interfaces/category.service';
-import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { QuerySearchDto } from './dto/query-search.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('category')
 @Controller('category')
@@ -24,9 +27,14 @@ export class CategoryController {
     private readonly categoryService: ICategoryService,
   ) {}
 
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('file'))
   @Post()
-  create(@Body() createCategoryDto: CreateCategoryDto) {
-    return this.categoryService.create(createCategoryDto);
+  create(
+    @Body() createCategoryDto: CreateCategoryDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.categoryService.create(createCategoryDto, file);
   }
 
   @Get()
@@ -42,12 +50,15 @@ export class CategoryController {
     return this.categoryService.findOneById(id);
   }
 
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('file'))
   @Patch(':id')
   update(
     @Param('id') id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
+    @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.categoryService.update(id, updateCategoryDto);
+    return this.categoryService.update(id, updateCategoryDto, file);
   }
 
   @Delete(':id')

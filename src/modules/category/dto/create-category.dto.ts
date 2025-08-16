@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class CreateCategoryDto {
   @ApiProperty({
@@ -43,4 +43,16 @@ export class CreateCategoryDto {
   })
   @IsString()
   descriptionUz: string;
+
+  @IsOptional()
+  image: string;
+
+  @ApiProperty({
+    description: 'png, ppt, wbep formatdagi fayl, faqat bitta rasm yuklanadi',
+    type: 'string',
+    format: 'binary',
+    required: false,
+  })
+  @IsOptional()
+  file?: Express.Multer.File;
 }

@@ -5,7 +5,10 @@ import { UpdateCategoryDto } from '../dto/update-category.dto';
 import { Category } from '../entities/category.entity';
 
 export interface ICategoryService {
-  create(dto: CreateCategoryDto): Promise<ResData<Category>>;
+  create(
+    dto: CreateCategoryDto,
+    file: Express.Multer.File,
+  ): Promise<ResData<Category>>;
   findAll(query: QuerySearchDto): Promise<
     ResData<{
       items: Category[];
@@ -15,6 +18,10 @@ export interface ICategoryService {
     }>
   >;
   findOneById(id: string): Promise<ResData<Category>>;
-  update(id: string, dto: UpdateCategoryDto): Promise<ResData<Category>>;
+  update(
+    id: string,
+    dto: UpdateCategoryDto,
+    file: Express.Multer.File,
+  ): Promise<ResData<Category>>;
   delete(id: string): Promise<ResData<Category>>;
 }
