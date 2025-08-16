@@ -18,6 +18,7 @@ import { SmsModule } from './modules/sms/sms.module';
 import { MarketModule } from './modules/market/market.module';
 import { MarketListModule } from './modules/market_list/market_list.module';
 import { BunnerModule } from './modules/bunner/bunner.module';
+import { HistoryModule } from './modules/history/history.module';
 
 @Module({
   imports: [
@@ -62,6 +63,7 @@ import { BunnerModule } from './modules/bunner/bunner.module';
     MarketModule,
     MarketListModule,
     BunnerModule,
+    HistoryModule,
   ],
   providers: [JwtStrategy],
 })

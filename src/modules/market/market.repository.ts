@@ -30,7 +30,13 @@ export class MarketRepository implements IMarketRepository {
   async findById(id: string): Promise<Market | null> {
     return await this.marketRepository.findOne({
       where: { id },
-      relations: ['users'],
+      relations: {
+        users: true,
+        marketLists: {
+          product:true,
+          user:true,
+        }
+      },
     });
   }
 
