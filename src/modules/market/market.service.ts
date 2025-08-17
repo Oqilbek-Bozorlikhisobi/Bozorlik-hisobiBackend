@@ -13,6 +13,10 @@ import {
 import { MarketNotFoundException } from './exeptions/market.exeption';
 import { AddUserDto } from './dto/add-user.dto';
 import { GetMarketByUserIdDto } from './dto/get-market-by-user-id.dto';
+import { IHistoryRepository } from '../history/interfaces/history.repository';
+import { HistoryNotFoundException } from '../history/exeptions/history.exeption';
+import { CreateMarketByHistoryIdDto } from './dto/create-market-by-historyid.dto';
+import { MarketList } from '../market_list/entities/market_list.entity';
 
 @Injectable()
 export class MarketService implements IMarketService {
@@ -21,6 +25,8 @@ export class MarketService implements IMarketService {
     private readonly marketRepository: IMarketRepository,
     @Inject('IUserRepository')
     private readonly userRepository: IUserRepository,
+    @Inject('IHistoryRepository')
+    private readonly historyRepository: IHistoryRepository,
   ) {}
 
   async create(dto: CreateMarketDto): Promise<ResData<Market>> {
@@ -39,7 +45,7 @@ export class MarketService implements IMarketService {
 
   async findAll(dto: GetMarketByUserIdDto): Promise<ResData<Array<Market>>> {
     const data = await this.marketRepository.findAll(dto.search);
-    data.forEach((market) => {
+    data.forEach(async (market) => {
       if (market.marketLists && market.marketLists.length > 0) {
         // Hamma isBuying true bo‘lsa
         const allBought = market.marketLists.every(
@@ -62,6 +68,7 @@ export class MarketService implements IMarketService {
         market.isAllBuy = false;
         (market as any).totalPrice = 0;
       }
+      await this.marketRepository.update(market);
     });
     return new ResData<Array<Market>>('ok', 200, data);
   }
@@ -120,4 +127,32 @@ export class MarketService implements IMarketService {
     const data = await this.marketRepository.delete(foundData);
     return new ResData<Market>('ok', 200, data);
   }
+
+  // async createMarketByHistoryId(dto: CreateMarketByHistoryIdDto): Promise<ResData<Market>> {
+  //   const history = await this.historyRepository.findById(dto.historyId)
+  //   if(!history){
+  //     throw new HistoryNotFoundException()
+  //   }
+  //   const checkUser = await this.userRepository.findOneById(dto.userId)
+  //   if(!checkUser){
+  //     throw new UserNotFound()
+  //   }
+  //   const newMarket = new Market()
+  //   newMarket.name = history.name
+  //   newMarket.users = [checkUser]
+  //   const data = await this.marketRepository.create(newMarket)
+
+  //   if (history.marketLists && Array.isArray(history.marketLists)){
+  //     const newMarketLists = history.marketLists.map((ml) => {
+  //       const newMl = new MarketList()
+  //       newMl.market = data
+  //       newMl.product = ml?.product
+  //       newMl.productName = ml?.productName
+  //       newMl.productType = ml?.productType
+  //       newMl.quantity = ml?.quantity
+  //       await this.marketLis
+  //     })
+
+  //   }
+  // }
 }

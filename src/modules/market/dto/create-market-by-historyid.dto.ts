@@ -1,13 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsUUID } from 'class-validator';
 
-export class CreateMarketDto {
+export class CreateMarketByHistoryIdDto {
   @ApiProperty({
-    description: 'Bozorlikni nomi',
-    example: 'Dachaga borish',
+    example: '23456789oikjuhygfg',
+    description: 'History unique id(uuid).',
   })
   @IsString()
-  name: string;
+  @IsUUID()
+  historyId: string;
 
   @ApiProperty({
     description: 'User unique id (UUID), Bozorlikni yaratgan user idsi',

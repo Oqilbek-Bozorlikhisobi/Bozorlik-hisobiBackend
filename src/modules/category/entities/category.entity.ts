@@ -1,6 +1,6 @@
-import { Column, Entity, OneToMany } from "typeorm";
-import { BaseEntity } from "../../../common/entities/base.entity";
-import { Product } from "../../products/entities/product.entity";
+import { Column, Entity, OneToMany } from 'typeorm';
+import { BaseEntity } from '../../../common/entities/base.entity';
+import { Product } from '../../products/entities/product.entity';
 
 @Entity('category')
 export class Category extends BaseEntity {
@@ -22,9 +22,12 @@ export class Category extends BaseEntity {
   @Column({ type: 'varchar', name: 'description_uz' })
   descriptionUz: string;
 
-  @OneToMany(() => Product, (product) => product.category)
+  @OneToMany(() => Product, (product) => product.category, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   products: Product[];
 
-  @Column({ type: 'varchar', name: 'images', nullable:true })
+  @Column({ type: 'varchar', name: 'images', nullable: true })
   image: string;
 }

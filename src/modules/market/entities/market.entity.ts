@@ -31,6 +31,6 @@ export class Market extends BaseEntity {
   })
   marketLists: MarketList[];
 
-  @Column({type: 'decimal', precision: 10, scale: 2 ,name: 'total_price', nullable:true})
+  @Column({type: 'decimal', precision: 10, scale: 2 ,name: 'total_price', nullable:true, default: 0})
   totalPrice: number;
 }

@@ -1,5 +1,6 @@
 import { ResData } from '../../../common/lib/resData';
 import { AddUserDto } from '../dto/add-user.dto';
+import { CreateMarketByHistoryIdDto } from '../dto/create-market-by-historyid.dto';
 import { CreateMarketDto } from '../dto/create-market.dto';
 import { GetMarketByUserIdDto } from '../dto/get-market-by-user-id.dto';
 import { UpdateMarketDto } from '../dto/update-market.dto';
@@ -12,4 +13,7 @@ export interface IMarketService {
   update(id: string, dto: UpdateMarketDto): Promise<ResData<Market>>;
   addUser(addUserDto: AddUserDto): Promise<ResData<Market>>;
   delete(id: string): Promise<ResData<Market>>;
+  // createMarketByHistoryId(
+  //   dto: CreateMarketByHistoryIdDto,
+  // ): Promise<ResData<Market>>;
 }
