@@ -78,8 +78,10 @@ export class CategoryService implements ICategoryService {
     if (!foundData) {
       throw new CategoryNotFoundException();
     }
-    const fileName = path.basename(foundData.image);
-    await this.fileService.deleteFile(fileName);
+    if (foundData.image) {
+      const fileName = path.basename(foundData.image);
+      await this.fileService.deleteFile(fileName);
+    }
     await this.categoryRepository.delete(foundData);
     return new ResData<Category>(
       'Category deleted successfully',
