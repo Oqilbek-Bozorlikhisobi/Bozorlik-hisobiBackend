@@ -6,6 +6,7 @@ import { IMarketService } from './interfaces/market.service';
 import { AddUserDto } from './dto/add-user.dto';
 import { GetMarketByUserIdDto } from './dto/get-market-by-user-id.dto';
 import { ApiQuery } from '@nestjs/swagger';
+import { CreateMarketByHistoryIdDto } from './dto/create-market-by-historyid.dto';
 
 @Controller('market')
 export class MarketController {
@@ -16,6 +17,11 @@ export class MarketController {
   @Post()
   create(@Body() createMarketDto: CreateMarketDto) {
     return this.marketService.create(createMarketDto);
+  }
+
+  @Post('create-by-history-id')
+  createMarketByHistoryId(@Body() dto: CreateMarketByHistoryIdDto) {
+    return this.marketService.createMarketByHistoryId(dto);
   }
 
   @Get()

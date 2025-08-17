@@ -14,14 +14,39 @@ export class UserRepository implements IUserRepository {
     return await this.userRepository.save(newUser);
   }
 
-  async findAll(query: QuerySearchDto): Promise<Array<User>> {
-    const {search = ''} = query
+  async findAll(query: QuerySearchDto): Promise<{
+    data: User[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
+    const { search = '', region = '', page = 1, limit = 0 } = query;
 
-    return await this.userRepository.find({
-        where: {
-            phoneNumber: Like(`%${search}%`)
-        }
-    });
+    const qb = this.userRepository.createQueryBuilder('user');
+
+    // Search bo‘yicha filter
+    if (search) {
+      qb.andWhere('user.phoneNumber LIKE :search', { search: `%${search}%` });
+    }
+
+    // Region bo‘yicha filter
+    if (region) {
+      qb.andWhere('user.region = :region', { region });
+    }
+
+    // Pagination qo‘llash
+    if (limit && limit > 0) {
+      qb.skip((page - 1) * limit).take(limit);
+    }
+
+    const [data, total] = await qb.getManyAndCount();
+
+    return {
+      data,
+      total,
+      page,
+      limit: limit && limit > 0 ? limit : total,
+    };
   }
 
   async findOneById(id: string): Promise<User | null> {

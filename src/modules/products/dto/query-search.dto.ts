@@ -12,6 +12,14 @@ export class QuerySearchDto {
   search?: string;
 
   @ApiPropertyOptional({
+    description: "Category id bo'yicha qidirish (uuid)",
+    example: '1cb54d67-c1ac-4d6c-b8f9-82cd5139e645',
+  })
+  @IsOptional()
+  @IsString()
+  categoryId?: string;
+
+  @ApiPropertyOptional({
     description: 'Nechanchi sahifa',
     example: 1,
   })

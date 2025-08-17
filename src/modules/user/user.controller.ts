@@ -57,10 +57,9 @@ export class UserController {
     return this.userService.verifyOtpForChangePhoneNumber(id, verifyOtpDto);
   }
 
-
-
   @Get()
   @ApiQuery({ name: 'search', required: false })
+  @ApiQuery({ name: 'region', required: false })
   findAll(@Query() query: QuerySearchDto) {
     return this.userService.findAll(query);
   }

@@ -17,6 +17,7 @@ import { IHistoryRepository } from '../history/interfaces/history.repository';
 import { HistoryNotFoundException } from '../history/exeptions/history.exeption';
 import { CreateMarketByHistoryIdDto } from './dto/create-market-by-historyid.dto';
 import { MarketList } from '../market_list/entities/market_list.entity';
+import { IMarketListRepository } from '../market_list/interfaces/market-list.repository';
 
 @Injectable()
 export class MarketService implements IMarketService {
@@ -27,6 +28,8 @@ export class MarketService implements IMarketService {
     private readonly userRepository: IUserRepository,
     @Inject('IHistoryRepository')
     private readonly historyRepository: IHistoryRepository,
+    @Inject('IMarketListRepository')
+    private readonly marketListRepository: IMarketListRepository,
   ) {}
 
   async create(dto: CreateMarketDto): Promise<ResData<Market>> {
@@ -128,31 +131,36 @@ export class MarketService implements IMarketService {
     return new ResData<Market>('ok', 200, data);
   }
 
-  // async createMarketByHistoryId(dto: CreateMarketByHistoryIdDto): Promise<ResData<Market>> {
-  //   const history = await this.historyRepository.findById(dto.historyId)
-  //   if(!history){
-  //     throw new HistoryNotFoundException()
-  //   }
-  //   const checkUser = await this.userRepository.findOneById(dto.userId)
-  //   if(!checkUser){
-  //     throw new UserNotFound()
-  //   }
-  //   const newMarket = new Market()
-  //   newMarket.name = history.name
-  //   newMarket.users = [checkUser]
-  //   const data = await this.marketRepository.create(newMarket)
+  async createMarketByHistoryId(
+    dto: CreateMarketByHistoryIdDto,
+  ): Promise<ResData<Market>> {
+    const history = await this.historyRepository.findById(dto.historyId);
+    if (!history) {
+      throw new HistoryNotFoundException();
+    }
+    const checkUser = await this.userRepository.findOneById(dto.userId);
+    if (!checkUser) {
+      throw new UserNotFound();
+    }
+    const newMarket = new Market();
+    newMarket.name = history.name;
+    newMarket.users = [checkUser];
+    const data = await this.marketRepository.create(newMarket);
 
-  //   if (history.marketLists && Array.isArray(history.marketLists)){
-  //     const newMarketLists = history.marketLists.map((ml) => {
-  //       const newMl = new MarketList()
-  //       newMl.market = data
-  //       newMl.product = ml?.product
-  //       newMl.productName = ml?.productName
-  //       newMl.productType = ml?.productType
-  //       newMl.quantity = ml?.quantity
-  //       await this.marketLis
-  //     })
-
-  //   }
-  // }
+    if (history.marketLists && Array.isArray(history.marketLists)) {
+      await Promise.all(
+        history.marketLists.map(async (ml) => {
+          const newMl = new MarketList();
+          newMl.market = data;
+          newMl.product = ml?.product;
+          newMl.productName = ml?.productName;
+          newMl.productType = ml?.productType;
+          newMl.quantity = ml?.quantity;
+          await this.marketListRepository.create(newMl);
+        }),
+      );
+    }
+    const updatedData = await this.marketRepository.findById(data.id)
+    return new ResData<Market>('ok', 200, updatedData);
+  }
 }

@@ -32,14 +32,12 @@ export class CategoryRepository implements ICategoryRepository {
     if (limit && limit > 0) {
       [data, total] = await this.categoryRepository.findAndCount({
         where,
-        relations: { products: true },
         skip: (page - 1) * limit,
         take: limit,
       });
     } else {
       [data, total] = await this.categoryRepository.findAndCount({
         where,
-        relations: { products: true },
       });
     }
 
@@ -54,9 +52,6 @@ export class CategoryRepository implements ICategoryRepository {
   async findById(id: string): Promise<Category | null> {
     return await this.categoryRepository.findOne({
       where: { id },
-      relations: {
-        products: true,
-      },
     });
   }
 

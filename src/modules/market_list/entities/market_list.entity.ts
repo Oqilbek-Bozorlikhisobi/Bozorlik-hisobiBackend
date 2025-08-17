@@ -6,7 +6,9 @@ import { User } from '../../user/entities/user.entity';
 
 @Entity('market_list')
 export class MarketList extends BaseEntity {
-  @ManyToOne(() => Market, (market) => market.marketLists)
+  @ManyToOne(() => Market, (market) => market.marketLists, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'market_id' })
   market: Market;
 

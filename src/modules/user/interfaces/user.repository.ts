@@ -2,7 +2,12 @@ import { QuerySearchDto } from '../dto/query-search.dto';
 import { User } from '../entities/user.entity';
 
 export interface IUserRepository {
-  findAll(query: QuerySearchDto): Promise<Array<User>>;
+  findAll(query: QuerySearchDto): Promise<{
+      data: User[];
+      total: number;
+      page: number;
+      limit: number;
+    }>;
   findOneById(id: string): Promise<User | null>;
   create(entity: User): Promise<User>;
   update(entity: User): Promise<User | null>;

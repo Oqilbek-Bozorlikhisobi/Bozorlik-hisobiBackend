@@ -40,6 +40,7 @@ export class ProductsController {
   @ApiQuery({ name: 'search', required: false })
   @ApiQuery({ name: 'page', required: false })
   @ApiQuery({ name: 'limit', required: false })
+  @ApiQuery({ name: 'categoryId', required: false })
   findAll(@Query() query: QuerySearchDto) {
     return this.productsService.findAll(query);
   }

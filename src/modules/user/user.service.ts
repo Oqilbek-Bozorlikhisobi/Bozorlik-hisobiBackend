@@ -57,9 +57,21 @@ export class UserService implements IUserService {
     return new ResData<User>('User register successfully', 201, newData);
   }
 
-  async findAll(query: QuerySearchDto): Promise<ResData<Array<User>>> {
+  async findAll(query: QuerySearchDto): Promise<
+    ResData<{
+      items: User[];
+      page: number;
+      limit: number;
+      total: number;
+    }>
+  > {
     const data = await this.userRepository.findAll(query);
-    return new ResData<Array<User>>('Success', 200, data);
+    return new ResData('ok', 200, {
+      items: data.data,
+      page: data.page,
+      limit: data.limit ?? 0, // null bo‘lsa 0
+      total: data.total,
+    });
   }
 
   async findOneById(id: string): Promise<ResData<User>> {

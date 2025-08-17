@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MarketListService } from './market_list.service';
 import { MarketListController } from './market_list.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -11,7 +11,7 @@ import { MarketListRepository } from './market_list.repository';
 @Module({
   imports: [
     TypeOrmModule.forFeature([MarketList]),
-    MarketModule,
+    forwardRef(() => MarketModule),
     UserModule,
     ProductsModule,
   ],

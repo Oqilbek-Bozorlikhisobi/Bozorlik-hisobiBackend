@@ -33,6 +33,7 @@ export class HistoryService implements IHistoryService {
     newHistory.users = market.users
     newHistory.totalPrice = market.totalPrice
     const data = await this.historyRepository.create(newHistory)
+    await this.marketRepository.delete(market)
     return new ResData<History>('History created successfully', 201, data)
   }
 

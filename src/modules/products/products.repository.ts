@@ -21,12 +21,13 @@ export class ProductRepository implements IProductsRepository {
     page: number;
     limit: number;
   }> {
-    const { search = '', page = 1, limit } = query;
+    const { search = '', page = 1, limit = 0, categoryId = '' } = query;
 
     const qb = this.productRepository
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.category', 'category');
 
+    // Search qo‘shish (titleEn, titleRu, titleUz)
     if (search) {
       qb.andWhere(
         '(product.titleEn ILIKE :search OR product.titleRu ILIKE :search OR product.titleUz ILIKE :search)',
@@ -34,19 +35,24 @@ export class ProductRepository implements IProductsRepository {
       );
     }
 
-    // Limit kelsa pagination qo‘llanadi
+    // Category bo‘yicha filter
+    if (categoryId) {
+      qb.andWhere('category.id = :categoryId', { categoryId });
+    }
+
+    // Pagination qo‘llash
     if (limit && limit > 0) {
       qb.skip((page - 1) * limit).take(limit);
     }
 
-
+    // Natijalarni olish va umumiy sonini hisoblash
     const [data, total] = await qb.getManyAndCount();
 
     return {
       data,
       total,
       page,
-      limit: limit && limit > 0 ? limit : total, // agar limit bo‘lmasa, hammasini chiqaradi
+      limit: limit && limit > 0 ? limit : total, // agar limit bo‘lmasa, barcha natijalarni chiqaradi
     };
   }
 
