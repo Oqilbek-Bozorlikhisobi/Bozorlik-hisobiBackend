@@ -17,6 +17,7 @@ import { QuerySearchDto } from './dto/query-search.dto';
 import { ChangePhoneNumberDto } from '../auth/dto/change-phone-number.dto';
 import { VerifyOtpDto } from '../auth/dto/verify-otp.dto';
 import { SendOtpAgainDto } from '../auth/dto/send-otp-again.dto';
+import { RestorePasswordDto } from './dto/restore-password.dto';
 
 @ApiTags('User')
 @Controller('user')
@@ -28,6 +29,11 @@ export class UserController {
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
+  }
+
+  @Patch('change/password')
+  restoreUserPassword(@Body() dto: RestorePasswordDto){
+    return this.userService.restoreUserPassword(dto);
   }
 
   @Post('change/phone-number/:id')

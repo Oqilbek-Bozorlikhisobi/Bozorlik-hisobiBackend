@@ -25,6 +25,7 @@ import { SmsService } from '../sms/sms.service';
 import { VerifyOtpDto } from '../auth/dto/verify-otp.dto';
 import { OtpDidntSend } from '../auth/exeption/auth.exeption';
 import { SendOtpAgainDto } from '../auth/dto/send-otp-again.dto';
+import { RestorePasswordDto } from './dto/restore-password.dto';
 
 @Injectable()
 export class UserService implements IUserService {
@@ -266,5 +267,19 @@ export class UserService implements IUserService {
     }
     const newData = await this.userRepository.delete(foundData);
     return new ResData<User>('Success', 200, newData);
+  }
+
+  async restoreUserPassword(dto: RestorePasswordDto): Promise<ResData<User>> {
+    const user = await this.userRepository.findByPhoneNumber(dto.phoneNumber)
+    if (!user) {
+      throw new UserNotFound(); 
+    }
+    if (dto.newPassword !== dto.confirmNewPassword) {
+      throw new PassworsDontMatch();
+    }
+    const hashedPassword = await hash(dto.newPassword, 7)
+    user.hashedPassword = hashedPassword
+    const updatedData = await this.userRepository.update(user)
+    return new ResData<User>('Success', 200, updatedData)
   }
 }
