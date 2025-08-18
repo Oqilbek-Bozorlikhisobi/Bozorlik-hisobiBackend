@@ -14,6 +14,7 @@ export class MarketList extends BaseEntity {
 
   @ManyToOne(() => Product, (product) => product.marketLists, {
     nullable: true,
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'product_id' })
   product: Product | null;
