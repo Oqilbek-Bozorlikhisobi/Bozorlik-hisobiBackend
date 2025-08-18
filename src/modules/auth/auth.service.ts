@@ -27,8 +27,9 @@ import { decode, encode } from '../../common/helpers/crypto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { SmsService } from '../sms/sms.service';
 import { SendOtpAgainDto } from './dto/send-otp-again.dto';
-import { UserNotFound } from '../user/exeptions/user.esxeption';
+import { SmsNotSendedExeption, UserNotFound } from '../user/exeptions/user.esxeption';
 import { RoleEnum } from '../../common/enums/enum';
+import { RestorePasswordDto } from './dto/restore-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -144,7 +145,7 @@ export class AuthService {
         message: 'Sms not sent',
       };
     }
-    
+
     const newUser = await this.userService.create(data);
     if (!newUser) {
       throw new BadRequestException('User not created');
@@ -320,6 +321,86 @@ export class AuthService {
       id: user.id,
       access_token: tokens.access_token,
       refresh_token: tokens.refresh_token,
+    };
+  }
+
+  async forgetPassword(data: RestorePasswordDto) {
+    const user = await this.userRepository.findByPhoneNumber(data.phoneNumber);
+    if (!user) {
+      throw new UserNotFound();
+    }
+    const OTP = generateOTP();
+    const now = new Date();
+    const expirationTime = AddMinutesToDate(now, 5);
+    await this.otpRepository.delete({ phoneNumber: data.phoneNumber });
+
+    const newOtp = await this.otpRepository.save({
+      otp: OTP,
+      phoneNumber: data.phoneNumber,
+      expirationTime: expirationTime,
+    });
+
+    const details = {
+      timestamp: now,
+      phoneNumber: data.phoneNumber,
+      otpId: newOtp.id,
+      newPassword: data.newPassword,
+    };
+    const encodeData = await encode(JSON.stringify(details));
+
+    // send sms to user
+    try {
+      await this.smsService.sendSms(data.phoneNumber, String(OTP));
+    } catch (error) {
+      console.log(error);
+      throw new SmsNotSendedExeption();
+    }
+    return {
+      user_id: user.id,
+      details: encodeData,
+      otp: OTP,
+    };
+  }
+
+  async verifyOtpForForgetPassword(data: VerifyOtpDto) {
+    const currentDate = new Date();
+    const decotedData = await decode(data.verification_key);
+    const details = JSON.parse(decotedData);
+
+    if (details.phoneNumber !== data.phoneNumber) {
+      throw new OtpDidntSend();
+    }
+    const resultOtp = await this.otpRepository.findOne({
+      where: {
+        id: details.otpId,
+      },
+    });
+    if (!resultOtp) {
+      throw new BadRequestException('There is no such otp');
+    }
+    if (resultOtp.isVerified) {
+      throw new BadRequestException('This OTP has been verified before');
+    }
+    if (resultOtp.expirationTime < currentDate) {
+      throw new BadRequestException('This OTP has expired');
+    }
+    if (resultOtp.otp !== data.otp) {
+      throw new BadRequestException('OTP is not eligible');
+    }
+    const user = await this.userRepository.findByPhoneNumber(
+      data.phoneNumber,
+    );
+    if (!user) {
+      throw new BadRequestException('No such user exists');
+    }
+    await this.otpRepository.save({
+      ...resultOtp,
+      isVerified: true,
+    });
+    user.hashedPassword = await hash(details.newPassword, 7);
+    await this.userRepository.update(user);
+    return {
+      message: 'Password changed successfully',
     };
   }
 }

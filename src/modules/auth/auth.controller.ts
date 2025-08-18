@@ -3,6 +3,7 @@ import {
   Post,
   Body,
   Res,
+  Patch,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginAdminDto } from './dto/login-admin.dto';
@@ -13,6 +14,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { SendOtpAgainDto } from './dto/send-otp-again.dto';
+import { RestorePasswordDto } from './dto/restore-password.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -71,9 +73,17 @@ export class AuthController {
   }
 
   @Post('sendotp/again')
-  sendOtpAgain(
-    @Body() data: SendOtpAgainDto,
-  ) {
+  sendOtpAgain(@Body() data: SendOtpAgainDto) {
     return this.authService.sendOtpAgain(data);
+  }
+
+  @Post('forgot/password')
+  forgotPassword(@Body() data: RestorePasswordDto) {
+    return this.authService.forgetPassword(data);
+  }
+
+  @Patch('forget/password/verify-otp')
+  verifyOtpForForgetPassword(@Body() data: VerifyOtpDto){
+    return this.authService.verifyOtpForForgetPassword(data);
   }
 }

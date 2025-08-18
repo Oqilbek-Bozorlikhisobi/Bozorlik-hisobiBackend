@@ -35,11 +35,6 @@ export class UserController {
   //   return this.userService.create(createUserDto);
   // }
 
-  @Patch('change/password')
-  restoreUserPassword(@Body() dto: RestorePasswordDto) {
-    return this.userService.restoreUserPassword(dto);
-  }
-
   @UseGuards(SelfGuard)
   @Auth(RoleEnum.USER)
   @Post('change/phone-number/:id')

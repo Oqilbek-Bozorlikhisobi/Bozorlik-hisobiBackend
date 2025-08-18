@@ -34,5 +34,4 @@ export interface IUserService {
     sendOtpAgainDto: SendOtpAgainDto,
   ): Promise<ResData<{ user_id: string; details: string; otp: string }>>;
   delete(id: string): Promise<ResData<User>>;
-  restoreUserPassword(dto: RestorePasswordDto): Promise<ResData<User>>;
 }
