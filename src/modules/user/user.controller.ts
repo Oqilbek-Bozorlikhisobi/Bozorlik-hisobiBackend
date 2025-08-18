@@ -9,6 +9,7 @@ import {
   Inject,
   Query,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -22,6 +23,7 @@ import { RestorePasswordDto } from './dto/restore-password.dto';
 import { Auth } from '../../common/decorator/auth.decorator';
 import { RoleEnum } from '../../common/enums/enum';
 import { SelfGuard } from '../shared/guards/self.guard';
+import { Request } from 'express';
 
 @ApiTags('User')
 @Controller('user')
@@ -74,6 +76,13 @@ export class UserController {
   @ApiQuery({ name: 'region', required: false })
   findAll(@Query() query: QuerySearchDto) {
     return this.userService.findAll(query);
+  }
+
+  @Auth(RoleEnum.USER)
+  @Get('profile')
+  getProfile(@Req() req: Request) {
+    const payload:any = req?.user
+    return this.userService.findOneById(payload?.id)
   }
 
   @Auth(RoleEnum.ADMIN, RoleEnum.USER)
