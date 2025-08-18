@@ -10,6 +10,7 @@ import {
   UseInterceptors,
   Query,
   UploadedFile,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -17,6 +18,8 @@ import { ApiConsumes, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { IProductsService } from './interfaces/products.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { QuerySearchDto } from './dto/query-search.dto';
+import { Auth } from '../../common/decorator/auth.decorator';
+import { RoleEnum } from '../../common/enums/enum';
 
 @ApiTags('products')
 @Controller('products')
@@ -28,6 +31,7 @@ export class ProductsController {
 
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('files'))
+  @Auth(RoleEnum.ADMIN)
   @Post()
   create(
     @Body() createProductDto: CreateProductDto,
@@ -52,6 +56,7 @@ export class ProductsController {
 
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('files'))
+  @Auth(RoleEnum.ADMIN)
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -61,6 +66,7 @@ export class ProductsController {
     return this.productsService.update(id, updateProductDto, files);
   }
 
+  @Auth(RoleEnum.ADMIN)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.productsService.delete(id);

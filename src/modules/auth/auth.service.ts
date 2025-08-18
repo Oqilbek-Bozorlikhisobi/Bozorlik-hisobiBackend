@@ -28,6 +28,7 @@ import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { SmsService } from '../sms/sms.service';
 import { SendOtpAgainDto } from './dto/send-otp-again.dto';
 import { UserNotFound } from '../user/exeptions/user.esxeption';
+import { RoleEnum } from '../../common/enums/enum';
 
 @Injectable()
 export class AuthService {
@@ -53,7 +54,7 @@ export class AuthService {
     if (!validPassword) {
       throw new EmailOrPasswordIncorrect();
     }
-    const tokens = await generateTokens(admin, this.jwtService);
+    const tokens = await generateTokens(admin, this.jwtService, RoleEnum.ADMIN);
     const hashedRefreshToken = await hash(tokens.refresh_token, 7);
     admin.hashedRefreshToken = hashedRefreshToken;
     admin.isActive = true;
@@ -97,7 +98,7 @@ export class AuthService {
       throw new InvalidRefreshToken();
     }
 
-    const tokens = await generateTokens(admin, this.jwtService);
+    const tokens = await generateTokens(admin, this.jwtService, RoleEnum.ADMIN);
     const hashedRefreshToken = await hash(tokens.refresh_token, 7);
     admin.hashedRefreshToken = hashedRefreshToken;
     await this.adminRepository.update(admin);
@@ -192,7 +193,7 @@ export class AuthService {
       ...resultOtp,
       isVerified: true,
     });
-    const tokens = await generateUserTokens(user, this.jwtService);
+    const tokens = await generateTokens(user, this.jwtService, RoleEnum.USER);
     const hashedRefreshToken = await hash(tokens.refresh_token, 7);
     user.hashedRefreshToken = hashedRefreshToken;
     await this.userRepository.update(user);
@@ -261,7 +262,7 @@ export class AuthService {
     if (!validPassword) {
       throw new PhoneNumberOrPasswordIncorrect();
     }
-    const tokens = await generateUserTokens(user, this.jwtService);
+    const tokens = await generateTokens(user, this.jwtService, RoleEnum.USER);
     const hashedRefreshToken = await hash(tokens.refresh_token, 7);
     user.hashedRefreshToken = hashedRefreshToken;
     await this.userRepository.update(user);
@@ -304,7 +305,7 @@ export class AuthService {
       throw new InvalidRefreshToken();
     }
 
-    const tokens = await generateUserTokens(user, this.jwtService);
+    const tokens = await generateTokens(user, this.jwtService, RoleEnum.ADMIN);
     const hashedRefreshToken = await hash(tokens.refresh_token, 7);
     user.hashedRefreshToken = hashedRefreshToken;
     await this.userRepository.update(user);

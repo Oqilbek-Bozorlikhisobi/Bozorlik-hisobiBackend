@@ -22,6 +22,8 @@ import {
   FileInterceptor,
 } from '@nestjs/platform-express';
 import { QuerySearchDto } from './dto/query-search.dto';
+import { Auth } from '../../common/decorator/auth.decorator';
+import { RoleEnum } from '../../common/enums/enum';
 
 @Controller('bunner')
 export class BunnerController {
@@ -37,6 +39,7 @@ export class BunnerController {
       { name: 'fileUz', maxCount: 1 },
     ]),
   )
+  @Auth(RoleEnum.ADMIN)
   @Post()
   create(
     @Body() createBunnerDto: CreateBunnerDto,
@@ -76,6 +79,7 @@ export class BunnerController {
       { name: 'fileUz', maxCount: 1 },
     ]),
   )
+  @Auth(RoleEnum.ADMIN)
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -96,6 +100,7 @@ export class BunnerController {
     );
   }
 
+  @Auth(RoleEnum.ADMIN)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.bunnerService.delete(id);

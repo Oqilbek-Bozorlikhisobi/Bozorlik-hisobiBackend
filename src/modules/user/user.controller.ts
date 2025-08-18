@@ -8,6 +8,7 @@ import {
   Delete,
   Inject,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -18,6 +19,9 @@ import { ChangePhoneNumberDto } from '../auth/dto/change-phone-number.dto';
 import { VerifyOtpDto } from '../auth/dto/verify-otp.dto';
 import { SendOtpAgainDto } from '../auth/dto/send-otp-again.dto';
 import { RestorePasswordDto } from './dto/restore-password.dto';
+import { Auth } from '../../common/decorator/auth.decorator';
+import { RoleEnum } from '../../common/enums/enum';
+import { SelfGuard } from '../shared/guards/self.guard';
 
 @ApiTags('User')
 @Controller('user')
@@ -26,16 +30,18 @@ export class UserController {
     @Inject('IUserService') private readonly userService: UserService,
   ) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
-  }
+  // @Post()
+  // create(@Body() createUserDto: CreateUserDto) {
+  //   return this.userService.create(createUserDto);
+  // }
 
   @Patch('change/password')
-  restoreUserPassword(@Body() dto: RestorePasswordDto){
+  restoreUserPassword(@Body() dto: RestorePasswordDto) {
     return this.userService.restoreUserPassword(dto);
   }
 
+  @UseGuards(SelfGuard)
+  @Auth(RoleEnum.USER)
   @Post('change/phone-number/:id')
   changePhoneNumber(
     @Param('id') id: string,
@@ -44,6 +50,8 @@ export class UserController {
     return this.userService.changePhoneNumber(id, changePhoneNumberDto);
   }
 
+  @UseGuards(SelfGuard)
+  @Auth(RoleEnum.USER)
   @Post('send-otp-again/phone-number/:id')
   sendOtpAgainForChangePhoneNumber(
     @Param('id') id: string,
@@ -55,6 +63,8 @@ export class UserController {
     );
   }
 
+  @UseGuards(SelfGuard)
+  @Auth(RoleEnum.USER)
   @Patch('verify/phone-number/:id')
   verifyOtpForChangePhoneNumber(
     @Param('id') id: string,
@@ -63,6 +73,7 @@ export class UserController {
     return this.userService.verifyOtpForChangePhoneNumber(id, verifyOtpDto);
   }
 
+  @Auth(RoleEnum.ADMIN, RoleEnum.USER)
   @Get()
   @ApiQuery({ name: 'search', required: false })
   @ApiQuery({ name: 'region', required: false })
@@ -70,16 +81,21 @@ export class UserController {
     return this.userService.findAll(query);
   }
 
+  @Auth(RoleEnum.ADMIN, RoleEnum.USER)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.userService.findOneById(id);
   }
 
+  @UseGuards(SelfGuard)
+  @Auth(RoleEnum.USER)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(id, updateUserDto);
   }
 
+  @UseGuards(SelfGuard)
+  @Auth(RoleEnum.USER)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.delete(id);
