@@ -23,27 +23,6 @@ export class CreateCategoryDto {
   @IsString()
   titleUz: string;
 
-  @ApiProperty({
-    description: 'description in english',
-    example: 'new',
-  })
-  @IsString()
-  descriptionEn: string;
-
-  @ApiProperty({
-    description: 'description in russian',
-    example: 'новый',
-  })
-  @IsString()
-  descriptionRu: string;
-
-  @ApiProperty({
-    description: 'description in uzbek',
-    example: 'yangi',
-  })
-  @IsString()
-  descriptionUz: string;
-
   @IsOptional()
   image: string;
 
