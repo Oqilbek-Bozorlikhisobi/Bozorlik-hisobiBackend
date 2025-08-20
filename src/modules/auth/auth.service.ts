@@ -137,13 +137,20 @@ export class AuthService {
     const encodeData = await encode(JSON.stringify(details));
 
     // send sms to user
+    // try {
+    //   await this.smsService.sendSms(data.phoneNumber, String(OTP));
+    // } catch (error) {
+    //   console.log(error);
+    //   return {
+    //     message: 'Sms not sent',
+    //   };
+    // }
+
     try {
       await this.smsService.sendSms(data.phoneNumber, String(OTP));
     } catch (error) {
       console.log(error);
-      return {
-        message: 'Sms not sent',
-      };
+      return { message: 'Sms not sent' };
     }
 
     const newUser = await this.userService.create(data);

@@ -71,7 +71,7 @@ export class SmsService {
 
     const data = new FormData();
     data.append('mobile_phone', phone_number.replace(/\D/g, ''));
-    // Tasdiqlash kodingiz: ${otp} (5 daqiqa amal qiladi)
+    // data.append('message', `${otp}`);
     data.append('message', `This is test from Eskiz`);
     // data.append('from', '4546');
 
