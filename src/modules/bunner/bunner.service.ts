@@ -63,6 +63,11 @@ export class BunnerService implements IBunnerService {
     return new ResData<Bunner>('ok', 200, foundData);
   }
 
+  async findAllWithOutPagination(): Promise<ResData<Bunner[]>> {
+    const data = await this.bunnerRepository.findAllWithOutPagination()
+    return new ResData<Bunner[]>('ok', 200, data);
+  }
+
   async update(
     id: string,
     dto: UpdateBunnerDto,

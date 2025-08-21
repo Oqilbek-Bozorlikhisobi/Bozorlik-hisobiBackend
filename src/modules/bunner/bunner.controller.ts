@@ -66,6 +66,11 @@ export class BunnerController {
     return this.bunnerService.findAll(query);
   }
 
+  @Get('all')
+  findAllWithOutPagination() {
+    return this.bunnerService.findAllWithOutPagination();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.bunnerService.findOneById(id);

@@ -19,6 +19,7 @@ export interface IBunnerService {
       total: number;
     }>
   >;
+  findAllWithOutPagination(): Promise<ResData<Bunner[]>>;
   findOneById(id: string): Promise<ResData<Bunner>>;
   update(
     id: string,

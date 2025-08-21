@@ -49,15 +49,19 @@ export class BunnerRepository implements IBunnerRepository {
     };
   }
 
+  async findAllWithOutPagination(): Promise<Bunner[]> {
+    return await this.bunnerRepository.find();
+  }
+
   async findById(id: string): Promise<Bunner | null> {
-      return await this.bunnerRepository.findOneBy({id})
+    return await this.bunnerRepository.findOneBy({ id });
   }
 
   async update(entity: Bunner): Promise<Bunner> {
-      return await this.bunnerRepository.save(entity)
+    return await this.bunnerRepository.save(entity);
   }
 
   async delete(entity: Bunner): Promise<Bunner> {
-      return await this.bunnerRepository.remove(entity)
+    return await this.bunnerRepository.remove(entity);
   }
 }
