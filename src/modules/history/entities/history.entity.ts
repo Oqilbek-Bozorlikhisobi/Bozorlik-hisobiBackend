@@ -14,4 +14,7 @@ export class History extends BaseEntity {
   
   @Column({type: 'decimal', precision: 10, scale: 2, default: 0, name: 'total_price'})
   totalPrice : number
+
+  @Column({type: "varchar", name:"location", nullable:true})
+  location: string;
 }
