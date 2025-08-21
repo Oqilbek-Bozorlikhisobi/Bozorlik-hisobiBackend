@@ -55,6 +55,7 @@ export class ProductsService implements IProductsService {
       page: number;
       limit: number;
       total: number;
+      totalPages: number;
     }>
   > {
     const data = await this.productRepository.findAll(query);
@@ -64,6 +65,7 @@ export class ProductsService implements IProductsService {
       page: data.page,
       limit: data.limit ?? 0, // null bo‘lsa 0
       total: data.total,
+      totalPages: data.totalPages,
     });
   }
 

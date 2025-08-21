@@ -19,7 +19,10 @@ export class CategoryService implements ICategoryService {
     private readonly fileService: FileService,
   ) {}
 
-  async create(dto: CreateCategoryDto, file: Express.Multer.File): Promise<ResData<Category>> {
+  async create(
+    dto: CreateCategoryDto,
+    file: Express.Multer.File,
+  ): Promise<ResData<Category>> {
     if (!file) {
       throw new FileIsMissinExeption();
     }
@@ -35,7 +38,13 @@ export class CategoryService implements ICategoryService {
   async findAll(
     query: QuerySearchDto,
   ): Promise<
-    ResData<{ items: Category[]; page: number; limit: number; total: number }>
+    ResData<{
+      items: Category[];
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    }>
   > {
     const data = await this.categoryRepository.findAll(query);
 
@@ -44,6 +53,7 @@ export class CategoryService implements ICategoryService {
       page: data.page,
       limit: data.limit ?? 0, // null bo‘lsa 0
       total: data.total,
+      totalPages: data.totalPages,
     });
   }
 
@@ -56,13 +66,17 @@ export class CategoryService implements ICategoryService {
     return new ResData<Category>('ok', 200, foundData);
   }
 
-  async update(id: string, dto: UpdateCategoryDto, file: Express.Multer.File): Promise<ResData<Category>> {
+  async update(
+    id: string,
+    dto: UpdateCategoryDto,
+    file: Express.Multer.File,
+  ): Promise<ResData<Category>> {
     const foundData = await this.categoryRepository.findById(id);
     if (!foundData) {
       throw new CategoryNotFoundException();
     }
     if (file) {
-      const fileName = path.basename(foundData.image)
+      const fileName = path.basename(foundData.image);
       await this.fileService.deleteFile(fileName);
       const newFileName = await this.fileService.saveFile(file);
       dto.image = `${process.env.BASE_URL}files/${newFileName}`;

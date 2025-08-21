@@ -15,6 +15,7 @@ export interface IProductsService {
       page: number;
       limit: number;
       total: number;
+      totalPages: number;
     }>
   >;
   findOneById(id: string): Promise<ResData<Product>>;

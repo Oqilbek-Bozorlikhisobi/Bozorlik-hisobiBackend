@@ -8,6 +8,7 @@ export interface IProductsRepository {
     total: number;
     page: number;
     limit: number;
+    totalPages: number;
   }>;
   update(entity: Product): Promise<Product>;
   delete(entity: Product): Promise<Product>;

@@ -17,7 +17,13 @@ export class CategoryRepository implements ICategoryRepository {
 
   async findAll(
     query: QuerySearchDto,
-  ): Promise<{ data: Category[]; total: number; page: number; limit: number }> {
+  ): Promise<{
+    data: Category[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
     const { search = '', page = 1, limit } = query;
 
     const where = [
@@ -41,11 +47,15 @@ export class CategoryRepository implements ICategoryRepository {
       });
     }
 
+    const appliedLimit = limit && limit > 0 ? limit : total;
+    const totalPages = appliedLimit > 0 ? Math.ceil(total / appliedLimit) : 1;
+
     return {
       data,
       total,
       page,
       limit: limit && limit > 0 ? limit : total, // null o‘rniga total yoki 0
+      totalPages,
     };
   }
 

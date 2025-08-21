@@ -33,4 +33,7 @@ export class Market extends BaseEntity {
 
   @Column({type: 'decimal', precision: 10, scale: 2 ,name: 'total_price', nullable:true, default: 0})
   totalPrice: number;
+
+  @Column({type: "varchar", name:"location", nullable:true})
+  location: string;
 }
