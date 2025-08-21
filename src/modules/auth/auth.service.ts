@@ -147,7 +147,11 @@ export class AuthService {
     // }
 
     try {
-      await this.smsService.sendSms(data.phoneNumber, String(OTP));
+      await this.smsService.sendSms(
+        data.phoneNumber,
+        String(OTP),
+        'MARKET APP ilovasida ro‘yxatdan o‘tish uchun tasdiqlash kodi:',
+      );
     } catch (error) {
       console.log(error);
       return { message: 'Sms not sent' };
@@ -244,7 +248,11 @@ export class AuthService {
 
     // send sms to user
     try {
-      await this.smsService.sendSms(data.phoneNumber, String(OTP));
+      await this.smsService.sendSms(
+        data.phoneNumber,
+        String(OTP),
+        'MARKET APP ilovasida ro‘yxatdan o‘tish uchun tasdiqlash kodi:',
+      );
     } catch (error) {
       console.log(error);
 
@@ -357,7 +365,11 @@ export class AuthService {
 
     // send sms to user
     try {
-      await this.smsService.sendSms(data.phoneNumber, String(OTP));
+      await this.smsService.sendSms(
+        data.phoneNumber,
+        String(OTP),
+        'MARKET APP ilovasining parolini tiklash uchun kod:',
+      );
     } catch (error) {
       console.log(error);
       throw new SmsNotSendedExeption();

@@ -70,7 +70,7 @@ export class UserController {
     return this.userService.verifyOtpForChangePhoneNumber(id, verifyOtpDto);
   }
 
-  @Auth(RoleEnum.ADMIN, RoleEnum.USER)
+  // @Auth(RoleEnum.ADMIN, RoleEnum.USER)
   @Get()
   @ApiQuery({ name: 'search', required: false })
   @ApiQuery({ name: 'region', required: false })
@@ -98,8 +98,8 @@ export class UserController {
     return this.userService.update(id, updateUserDto);
   }
 
-  @UseGuards(SelfGuard)
-  @Auth(RoleEnum.USER)
+  // @UseGuards(SelfGuard)
+  // @Auth(RoleEnum.USER)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.delete(id);

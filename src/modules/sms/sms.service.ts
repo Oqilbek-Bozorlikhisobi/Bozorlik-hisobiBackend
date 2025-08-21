@@ -143,9 +143,9 @@ export class SmsService {
     return this.loginEskiz();
   }
 
-  async sendSms(phone_number: string, otp: string) {
+  async sendSms(phone_number: string, otp: string, template:string) {
     const token = await this.getValidToken();
-    const message = `MARKET APP ilovasining parolini tiklash uchun kod: ${otp}`;
+    const message = `${template} ${otp}`;
 
     const data = new FormData();
     data.append('mobile_phone', phone_number.replace(/\D/g, ''));
