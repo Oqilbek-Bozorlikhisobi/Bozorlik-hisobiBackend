@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Inject } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, Req } from '@nestjs/common';
 import { MarketListService } from './market_list.service';
 import { CreateMarketListDto } from './dto/create-market_list.dto';
 import { UpdateMarketListDto } from './dto/update-market_list.dto';
@@ -6,6 +6,7 @@ import { IMarketListService } from './interfaces/market-list.service';
 import { CheckListDto } from './dto/check-list.dto';
 import { RoleEnum } from '../../common/enums/enum';
 import { Auth } from '../../common/decorator/auth.decorator';
+import { Request } from 'express';
 
 @Controller('market-list')
 export class MarketListController {
@@ -32,7 +33,13 @@ export class MarketListController {
 
   @Auth(RoleEnum.USER)
   @Patch('check-is-buying/:id')
-  checkMarketListIsBuying(@Param('id') id: string, @Body() dto: CheckListDto) {
+  checkMarketListIsBuying(
+    @Param('id') id: string,
+    @Body() dto: CheckListDto,
+    @Req() req: Request,
+  ) {
+    const payload:any = req?.user
+    dto.userId = payload?.id
     return this.marketListService.checkMarketListIsBuying(id, dto);
   }
 
