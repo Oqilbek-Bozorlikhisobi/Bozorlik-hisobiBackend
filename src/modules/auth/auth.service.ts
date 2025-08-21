@@ -213,7 +213,7 @@ export class AuthService {
 
     return {
       message: 'User registered in successfully',
-      id: user.id,
+      user: user,
       access_token: tokens.access_token,
       refresh_token: tokens.refresh_token,
     };
@@ -282,7 +282,7 @@ export class AuthService {
 
     return {
       message: 'User logged in successfully',
-      id: user.id,
+      user: user,
       access_token: tokens.access_token,
       refresh_token: tokens.refresh_token,
     };
@@ -325,7 +325,7 @@ export class AuthService {
 
     return {
       message: 'Token refreshed successfully',
-      id: user.id,
+      user: user,
       access_token: tokens.access_token,
       refresh_token: tokens.refresh_token,
     };
