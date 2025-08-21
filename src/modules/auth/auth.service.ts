@@ -27,7 +27,7 @@ import { decode, encode } from '../../common/helpers/crypto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { SmsService } from '../sms/sms.service';
 import { SendOtpAgainDto } from './dto/send-otp-again.dto';
-import { SmsNotSendedExeption, UserNotFound } from '../user/exeptions/user.esxeption';
+import { SmsNotSendedExeption, UserAlreadyExists, UserNotFound } from '../user/exeptions/user.esxeption';
 import { RoleEnum } from '../../common/enums/enum';
 import { RestorePasswordDto } from './dto/restore-password.dto';
 
@@ -118,6 +118,10 @@ export class AuthService {
   }
 
   async registerUser(data: CreateUserDto, res: Response) {
+    const condidate = await this.userRepository.findByPhoneNumber(data.phoneNumber)
+    if (condidate) {
+      throw new UserAlreadyExists();
+    }
     const OTP = generateOTP();
     const now = new Date();
     const expirationTime = AddMinutesToDate(now, 5);
@@ -132,19 +136,10 @@ export class AuthService {
       timestamp: now,
       phoneNumber: data.phoneNumber,
       otpId: newOtp.id,
+      userData: data,
     };
 
     const encodeData = await encode(JSON.stringify(details));
-
-    // send sms to user
-    // try {
-    //   await this.smsService.sendSms(data.phoneNumber, String(OTP));
-    // } catch (error) {
-    //   console.log(error);
-    //   return {
-    //     message: 'Sms not sent',
-    //   };
-    // }
 
     try {
       await this.smsService.sendSms(
@@ -157,13 +152,7 @@ export class AuthService {
       return { message: 'Sms not sent' };
     }
 
-    const newUser = await this.userService.create(data);
-    if (!newUser) {
-      throw new BadRequestException('User not created');
-    }
-
     return {
-      user_id: newUser.data?.id,
       details: encodeData,
       otp: OTP,
     };
@@ -195,16 +184,21 @@ export class AuthService {
     if (resultOtp.otp !== verifyOtp.otp) {
       throw new BadRequestException('OTP is not eligible');
     }
-    const user = await this.userRepository.findByPhoneNumber(
-      verifyOtp.phoneNumber,
-    );
-    if (!user) {
-      throw new BadRequestException('No such user exists');
-    }
+
     await this.otpRepository.save({
       ...resultOtp,
       isVerified: true,
     });
+
+    const userData: CreateUserDto = details.userData;
+    const newUser = await this.userService.create(userData)
+
+    if (!newUser || !newUser.data) {
+      throw new BadRequestException('User not created');
+    }
+
+    const user = newUser.data;
+    
     const tokens = await generateTokens(user, this.jwtService, RoleEnum.USER);
     const hashedRefreshToken = await hash(tokens.refresh_token, 7);
     user.hashedRefreshToken = hashedRefreshToken;

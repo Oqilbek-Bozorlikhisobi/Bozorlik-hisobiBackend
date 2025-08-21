@@ -98,8 +98,7 @@ export class UserController {
     return this.userService.update(id, updateUserDto);
   }
 
-  @UseGuards(SelfGuard)
-  @Auth(RoleEnum.USER)
+  @Auth(RoleEnum.USER, RoleEnum.ADMIN)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.delete(id);
