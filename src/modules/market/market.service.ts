@@ -46,7 +46,7 @@ export class MarketService implements IMarketService {
     return new ResData<Market>('Market created successfully', 201, data);
   }
 
-  async findAll(id : string): Promise<ResData<Array<Market>>> {
+  async findAll(id: string): Promise<ResData<Array<Market>>> {
     const data = await this.marketRepository.findAll(id);
     data.forEach(async (market) => {
       if (market.marketLists && market.marketLists.length > 0) {
@@ -160,7 +160,45 @@ export class MarketService implements IMarketService {
         }),
       );
     }
-    const updatedData = await this.marketRepository.findById(data.id)
+    const updatedData = await this.marketRepository.findById(data.id);
     return new ResData<Market>('ok', 200, updatedData);
+  }
+
+  async getCurrentMarket(userId: string): Promise<ResData<Market>> {
+    const markets = await this.marketRepository.findAll(userId);
+
+    if (!markets || markets.length === 0) {
+      throw new MarketNotFoundException();
+    }
+
+    // createdAt bo‘yicha eng oxirgi qo‘shilgan market
+    const latestMarket = markets.sort(
+      (a, b) => +new Date(b.createdAt) - +new Date(a.createdAt),
+    )[0];
+
+    // totalPrice va isAllBuy hisoblash
+    if (latestMarket.marketLists && latestMarket.marketLists.length > 0) {
+      const allBought = latestMarket.marketLists.every(
+        (ml) => ml.isBuying === true,
+      );
+      latestMarket.isAllBuy = allBought;
+
+      const totalPrice = latestMarket.marketLists
+        .filter((ml) => ml.isBuying)
+        .reduce((sum, ml) => {
+          const price = Number(ml.price ?? 0);
+          const quantity = Number(ml.quantity ?? 1);
+          return sum + price * quantity;
+        }, 0);
+
+      (latestMarket as any).totalPrice = totalPrice;
+    } else {
+      latestMarket.isAllBuy = false;
+      (latestMarket as any).totalPrice = 0;
+    }
+
+    await this.marketRepository.update(latestMarket);
+
+    return new ResData<Market>('ok', 200, latestMarket);
   }
 }

@@ -16,4 +16,5 @@ export interface IMarketService {
   createMarketByHistoryId(
     dto: CreateMarketByHistoryIdDto,
   ): Promise<ResData<Market>>;
+  getCurrentMarket(userId: string): Promise<ResData<Market>>;
 }

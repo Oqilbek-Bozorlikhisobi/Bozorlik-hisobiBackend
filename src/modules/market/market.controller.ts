@@ -37,6 +37,13 @@ export class MarketController {
     return this.marketService.findAll(payload?.id);
   }
 
+  @Auth(RoleEnum.USER)
+  @Get('current')
+  getCurrentMarket(@Req() req: Request) {
+    const payload:any = req?.user
+    return this.marketService.getCurrentMarket(payload?.id);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.marketService.findOneById(id);
