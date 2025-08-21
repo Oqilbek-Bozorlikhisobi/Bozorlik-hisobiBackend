@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, Query, UseGuards, Req } from '@nestjs/common';
 import { MarketService } from './market.service';
 import { CreateMarketDto } from './dto/create-market.dto';
 import { UpdateMarketDto } from './dto/update-market.dto';
@@ -10,6 +10,7 @@ import { CreateMarketByHistoryIdDto } from './dto/create-market-by-historyid.dto
 import { Auth } from '../../common/decorator/auth.decorator';
 import { RoleEnum } from '../../common/enums/enum';
 import { SelfGuard } from '../shared/guards/self.guard';
+import { Request } from 'express';
 
 @Controller('market')
 export class MarketController {
@@ -29,12 +30,11 @@ export class MarketController {
     return this.marketService.createMarketByHistoryId(dto);
   }
 
-  @UseGuards(SelfGuard)
   @Auth(RoleEnum.USER)
   @Get()
-  @ApiQuery({ name: 'search', required: false })
-  findAll(@Query() dto: GetMarketByUserIdDto) {
-    return this.marketService.findAll(dto);
+  findAll(@Req() req: Request) {
+    const payload:any = req?.user
+    return this.marketService.findAll(payload?.id);
   }
 
   @Get(':id')

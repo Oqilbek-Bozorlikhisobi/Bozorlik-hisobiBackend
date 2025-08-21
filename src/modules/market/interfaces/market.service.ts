@@ -8,7 +8,7 @@ import { Market } from '../entities/market.entity';
 
 export interface IMarketService {
   create(dto: CreateMarketDto): Promise<ResData<Market>>;
-  findAll(dto: GetMarketByUserIdDto): Promise<ResData<Array<Market>>>;
+  findAll(id: string): Promise<ResData<Array<Market>>>;
   findOneById(id: string): Promise<ResData<Market>>;
   update(id: string, dto: UpdateMarketDto): Promise<ResData<Market>>;
   addUser(addUserDto: AddUserDto): Promise<ResData<Market>>;

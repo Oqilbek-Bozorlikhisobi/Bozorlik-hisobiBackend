@@ -46,8 +46,8 @@ export class MarketService implements IMarketService {
     return new ResData<Market>('Market created successfully', 201, data);
   }
 
-  async findAll(dto: GetMarketByUserIdDto): Promise<ResData<Array<Market>>> {
-    const data = await this.marketRepository.findAll(dto.search);
+  async findAll(id : string): Promise<ResData<Array<Market>>> {
+    const data = await this.marketRepository.findAll(id);
     data.forEach(async (market) => {
       if (market.marketLists && market.marketLists.length > 0) {
         // Hamma isBuying true bo‘lsa
