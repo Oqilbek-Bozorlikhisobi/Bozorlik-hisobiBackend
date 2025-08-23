@@ -168,7 +168,7 @@ export class MarketService implements IMarketService {
     const currentMarket = await this.marketRepository.findByIsCurrent(userId);
 
     if (!currentMarket) {
-      throw new MarketNotFoundException();
+      return new ResData<Market>('ok', 200, null);
     }
 
     if (currentMarket.marketLists && currentMarket.marketLists.length > 0) {
