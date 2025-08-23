@@ -15,6 +15,7 @@ import { CreateUserDto } from '../user/dto/create-user.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { SendOtpAgainDto } from './dto/send-otp-again.dto';
 import { RestorePasswordDto } from './dto/restore-password.dto';
+import { SendOtpAgainForRegisterDto } from './dto/send-otp-again-for-register.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -82,8 +83,14 @@ export class AuthController {
     return this.authService.forgetPassword(data);
   }
 
+  @Post('sendotp/again/for-register')
+  sendOtpAgainForRegister(@Body() data: SendOtpAgainForRegisterDto) {
+    return this.authService.sendOtpAgainForRegister(data);
+  }
+
+
   @Patch('forget/password/verify-otp')
-  verifyOtpForForgetPassword(@Body() data: VerifyOtpDto){
+  verifyOtpForForgetPassword(@Body() data: VerifyOtpDto) {
     return this.authService.verifyOtpForForgetPassword(data);
   }
 }

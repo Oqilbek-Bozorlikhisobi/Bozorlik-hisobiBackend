@@ -27,9 +27,14 @@ import { decode, encode } from '../../common/helpers/crypto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { SmsService } from '../sms/sms.service';
 import { SendOtpAgainDto } from './dto/send-otp-again.dto';
-import { SmsNotSendedExeption, UserAlreadyExists, UserNotFound } from '../user/exeptions/user.esxeption';
+import {
+  SmsNotSendedExeption,
+  UserAlreadyExists,
+  UserNotFound,
+} from '../user/exeptions/user.esxeption';
 import { RoleEnum } from '../../common/enums/enum';
 import { RestorePasswordDto } from './dto/restore-password.dto';
+import { SendOtpAgainForRegisterDto } from './dto/send-otp-again-for-register.dto';
 
 @Injectable()
 export class AuthService {
@@ -118,7 +123,9 @@ export class AuthService {
   }
 
   async registerUser(data: CreateUserDto, res: Response) {
-    const condidate = await this.userRepository.findByPhoneNumber(data.phoneNumber)
+    const condidate = await this.userRepository.findByPhoneNumber(
+      data.phoneNumber,
+    );
     if (condidate) {
       throw new UserAlreadyExists();
     }
@@ -191,14 +198,14 @@ export class AuthService {
     });
 
     const userData: CreateUserDto = details.userData;
-    const newUser = await this.userService.create(userData)
+    const newUser = await this.userService.create(userData);
 
     if (!newUser || !newUser.data) {
       throw new BadRequestException('User not created');
     }
 
     const user = newUser.data;
-    
+
     const tokens = await generateTokens(user, this.jwtService, RoleEnum.USER);
     const hashedRefreshToken = await hash(tokens.refresh_token, 7);
     user.hashedRefreshToken = hashedRefreshToken;
@@ -214,6 +221,48 @@ export class AuthService {
       user: user,
       access_token: tokens.access_token,
       refresh_token: tokens.refresh_token,
+    };
+  }
+
+  async sendOtpAgainForRegister(data: SendOtpAgainForRegisterDto) {
+    const decotedData = await decode(data.verification_key);
+    const details = JSON.parse(decotedData);
+
+    if (details.phoneNumber !== data.phoneNumber) {
+      throw new OtpDidntSend();
+    }
+
+    const OTP = generateOTP();
+    const now = new Date();
+    const expirationTime = AddMinutesToDate(now, 5);
+
+    await this.otpRepository.delete({ phoneNumber: data.phoneNumber });
+
+    const newOtp = await this.otpRepository.save({
+      otp: OTP,
+      phoneNumber: data.phoneNumber,
+      expirationTime: expirationTime,
+    });
+
+    details.otpId = newOtp.id;
+    details.timestamp = now;
+
+    const encodeData = await encode(JSON.stringify(details));
+
+    try {
+      await this.smsService.sendSms(
+        data.phoneNumber,
+        String(OTP),
+        'MARKET APP ilovasida ro‘yxatdan o‘tish uchun tasdiqlash kodi:',
+      );
+    } catch (error) {
+      console.log(error);
+      throw new SmsNotSendedExeption();
+    }
+
+    return {
+      details: encodeData,
+      otp: OTP,
     };
   }
 
@@ -400,9 +449,7 @@ export class AuthService {
     if (resultOtp.otp !== data.otp) {
       throw new BadRequestException('OTP is not eligible');
     }
-    const user = await this.userRepository.findByPhoneNumber(
-      data.phoneNumber,
-    );
+    const user = await this.userRepository.findByPhoneNumber(data.phoneNumber);
     if (!user) {
       throw new BadRequestException('No such user exists');
     }
