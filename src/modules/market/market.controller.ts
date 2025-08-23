@@ -33,14 +33,14 @@ export class MarketController {
   @Auth(RoleEnum.USER)
   @Get()
   findAll(@Req() req: Request) {
-    const payload:any = req?.user
+    const payload: any = req?.user;
     return this.marketService.findAll(payload?.id);
   }
 
   @Auth(RoleEnum.USER)
   @Get('current')
   getCurrentMarket(@Req() req: Request) {
-    const payload:any = req?.user
+    const payload: any = req?.user;
     return this.marketService.getCurrentMarket(payload?.id);
   }
 
@@ -53,6 +53,13 @@ export class MarketController {
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateMarketDto: UpdateMarketDto) {
     return this.marketService.update(id, updateMarketDto);
+  }
+
+  @Auth(RoleEnum.USER)
+  @Patch('do-current/:id')
+  doMarketIsCurrent(@Param('id') id: string, @Req() req: Request) {
+    const payload: any = req?.user;
+    return this.marketService.doMarketIsCurrent(id, payload?.id);
   }
 
   @Auth(RoleEnum.USER)

@@ -165,25 +165,19 @@ export class MarketService implements IMarketService {
   }
 
   async getCurrentMarket(userId: string): Promise<ResData<Market>> {
-    const markets = await this.marketRepository.findAll(userId);
+    const currentMarket = await this.marketRepository.findByIsCurrent(userId);
 
-    if (!markets || markets.length === 0) {
+    if (!currentMarket) {
       throw new MarketNotFoundException();
     }
 
-    // createdAt bo‘yicha eng oxirgi qo‘shilgan market
-    const latestMarket = markets.sort(
-      (a, b) => +new Date(b.createdAt) - +new Date(a.createdAt),
-    )[0];
-
-    // totalPrice va isAllBuy hisoblash
-    if (latestMarket.marketLists && latestMarket.marketLists.length > 0) {
-      const allBought = latestMarket.marketLists.every(
+    if (currentMarket.marketLists && currentMarket.marketLists.length > 0) {
+      const allBought = currentMarket.marketLists.every(
         (ml) => ml.isBuying === true,
       );
-      latestMarket.isAllBuy = allBought;
+      currentMarket.isAllBuy = allBought;
 
-      const totalPrice = latestMarket.marketLists
+      const totalPrice = currentMarket.marketLists
         .filter((ml) => ml.isBuying)
         .reduce((sum, ml) => {
           const price = Number(ml.price ?? 0);
@@ -191,14 +185,40 @@ export class MarketService implements IMarketService {
           return sum + price * quantity;
         }, 0);
 
-      (latestMarket as any).totalPrice = totalPrice;
+      (currentMarket as any).totalPrice = totalPrice;
     } else {
-      latestMarket.isAllBuy = false;
-      (latestMarket as any).totalPrice = 0;
+      currentMarket.isAllBuy = false;
+      (currentMarket as any).totalPrice = 0;
     }
 
-    await this.marketRepository.update(latestMarket);
+    await this.marketRepository.update(currentMarket);
 
-    return new ResData<Market>('ok', 200, latestMarket);
+    return new ResData<Market>('ok', 200, currentMarket);
+  }
+
+  async doMarketIsCurrent(
+    id: string,
+    userId: string,
+  ): Promise<ResData<Market>> {
+    // Market mavjudligini tekshiramiz
+    const foundData = await this.marketRepository.findById(id);
+    if (!foundData) {
+      throw new MarketNotFoundException();
+    }
+
+    // Shu userga tegishli bo‘lgan barcha marketlarda isCurrent = false qilamiz
+    const markets = await this.marketRepository.findAll(userId);
+    for (const market of markets) {
+      if (market.isCurrent) {
+        market.isCurrent = false;
+        await this.marketRepository.update(market);
+      }
+    }
+
+    // Tanlangan marketni current qilamiz
+    foundData.isCurrent = true;
+    const updated = await this.marketRepository.update(foundData);
+
+    return new ResData<Market>('Market set as current', 200, updated);
   }
 }

@@ -6,4 +6,5 @@ export interface IMarketRepository {
   update(entity: Market): Promise<Market>;
   delete(entity: Market): Promise<Market>;
   findById(id: string): Promise<Market | null>;
+  findByIsCurrent(userId:string): Promise<Market | null>;
 }

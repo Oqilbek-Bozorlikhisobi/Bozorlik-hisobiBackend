@@ -36,4 +36,7 @@ export class Market extends BaseEntity {
 
   @Column({type: "varchar", name:"location", nullable:true})
   location: string;
+
+  @Column({type:"boolean", name:"is_current", default:false})
+  isCurrent: boolean;
 }

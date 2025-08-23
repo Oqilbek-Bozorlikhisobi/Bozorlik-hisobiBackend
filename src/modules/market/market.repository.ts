@@ -54,4 +54,26 @@ export class MarketRepository implements IMarketRepository {
   async delete(entity: Market): Promise<Market> {
     return await this.marketRepository.remove(entity);
   }
+
+  async findByIsCurrent(userId: string): Promise<Market | null> {
+    return await this.marketRepository
+      .createQueryBuilder('market')
+      .leftJoinAndSelect('market.users', 'user')
+      .leftJoinAndSelect('market.marketLists', 'marketList')
+      .leftJoinAndSelect('marketList.product', 'product')
+      .leftJoinAndSelect('marketList.user', 'marketListUser')
+      .where('market.isCurrent = :isCurrent', { isCurrent: true })
+      .andWhere((qb) => {
+        const subQuery = qb
+          .subQuery()
+          .select('1')
+          .from('market_user', 'mu')
+          .where('mu.market_id = market.id')
+          .andWhere('mu.user_id = :userId')
+          .getQuery();
+        return `EXISTS ${subQuery}`;
+      })
+      .setParameter('userId', userId)
+      .getOne();
+  }
 }
