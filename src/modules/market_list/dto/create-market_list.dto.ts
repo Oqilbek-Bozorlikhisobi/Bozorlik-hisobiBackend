@@ -28,14 +28,6 @@ export class CreateMarketListDto {
   productName: string;
 
   @ApiProperty({
-    description: "Productni type(navi)",
-    example: "Echki suti"
-  })
-  @IsOptional()
-  @IsString()
-  productType: string;
-
-  @ApiProperty({
     description: "Product olish miqdori(kg, litr, dona)",
     example: 1
   })

@@ -22,9 +22,6 @@ export class MarketList extends BaseEntity {
   @Column({ type: 'varchar', name: 'product_name', nullable: true })
   productName: string;
 
-  @Column({ type: 'varchar', name: 'product_type', nullable: true })
-  productType: string;
-
   @Column({
     type: 'decimal',
     precision: 10,
