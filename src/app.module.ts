@@ -19,6 +19,7 @@ import { MarketModule } from './modules/market/market.module';
 import { MarketListModule } from './modules/market_list/market_list.module';
 import { BunnerModule } from './modules/bunner/bunner.module';
 import { HistoryModule } from './modules/history/history.module';
+import { FeedbackModule } from './modules/feedback/feedback.module';
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import { HistoryModule } from './modules/history/history.module';
     MarketListModule,
     BunnerModule,
     HistoryModule,
+    FeedbackModule,
   ],
   providers: [JwtStrategy],
 })
