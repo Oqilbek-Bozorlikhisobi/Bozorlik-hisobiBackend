@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, Query, UseGuards, Res, Req } from '@nestjs/common';
 import { HistoryService } from './history.service';
 import { CreateHistoryDto } from './dto/create-history.dto';
 import { UpdateHistoryDto } from './dto/update-history.dto';
@@ -8,6 +8,7 @@ import { GetHistoryByUserIdDto } from './dto/get-history-by-user-id.dto';
 import { Auth } from '../../common/decorator/auth.decorator';
 import { RoleEnum } from '../../common/enums/enum';
 import { SelfGuard } from '../shared/guards/self.guard';
+import { Request } from 'express';
 
 @Controller('history')
 export class HistoryController {
@@ -21,12 +22,11 @@ export class HistoryController {
     return this.historyService.create(createHistoryDto);
   }
 
-  @UseGuards(SelfGuard)
-  @Auth(RoleEnum.USER, RoleEnum.ADMIN)
+  @Auth(RoleEnum.USER)
   @Get()
-  @ApiQuery({ name: 'userId', required: true })
-  getAllUserHistoriesById(@Query() dto: GetHistoryByUserIdDto) {
-    return this.historyService.getAllUserHistoriesById(dto);
+  getAllUserHistoriesById(@Req() req: Request) {
+    const payload:any = req?.user
+    return this.historyService.getAllUserHistoriesById(payload.id);
   }
 
   @Get(':id')

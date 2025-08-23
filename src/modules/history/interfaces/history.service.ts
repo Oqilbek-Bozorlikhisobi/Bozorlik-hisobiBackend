@@ -6,7 +6,7 @@ import { History } from '../entities/history.entity';
 
 export interface IHistoryService {
   create(dto: CreateHistoryDto): Promise<ResData<History>>;
-  getAllUserHistoriesById(dto: GetHistoryByUserIdDto): Promise<ResData<Array<History>>>;
+  getAllUserHistoriesById(userId: string): Promise<ResData<Array<History>>>;
   findOneById(id: string): Promise<ResData<History>>;
   delete(id: string): Promise<ResData<History>>;
 }

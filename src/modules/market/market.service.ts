@@ -89,13 +89,6 @@ export class MarketService implements IMarketService {
     if (!foundData) {
       throw new MarketNotFoundException();
     }
-    if (dto.userId) {
-      const user = await this.userRepository.findOneById(dto.userId);
-      if (!user) {
-        throw new UserNotFound();
-      }
-      foundData.users = [user];
-    }
     Object.assign(foundData, dto);
     const data = await this.marketRepository.update(foundData);
     return new ResData<Market>('ok', 200, data);

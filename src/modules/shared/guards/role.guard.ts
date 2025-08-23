@@ -28,7 +28,7 @@ export class RolesGuard implements CanActivate {
 
 
     this.logger.debug(`Required roles: ${requiredRoles}`);
-    this.logger.debug(`User: ${JSON.stringify(user)}`);
+    // this.logger.debug(`User: ${JSON.stringify(user)}`);
 
     if (!user?.role) {
       throw new ForbiddenException('User or user.role is undefined');

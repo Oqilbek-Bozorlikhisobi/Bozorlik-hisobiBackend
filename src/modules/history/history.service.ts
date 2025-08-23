@@ -38,8 +38,8 @@ export class HistoryService implements IHistoryService {
     return new ResData<History>('History created successfully', 201, data)
   }
 
-  async getAllUserHistoriesById(dto: GetHistoryByUserIdDto): Promise<ResData<Array<History>>> {
-    const data = await this.historyRepository.findAll(dto.userId)
+  async getAllUserHistoriesById(userId:string): Promise<ResData<Array<History>>> {
+    const data = await this.historyRepository.findAll(userId)
     return new ResData<Array<History>>('ok', 200, data)
   }
 
