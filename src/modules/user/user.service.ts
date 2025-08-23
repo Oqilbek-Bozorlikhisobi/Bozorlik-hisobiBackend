@@ -162,7 +162,7 @@ export class UserService implements IUserService {
       await this.smsService.sendSms(
         changePhoneNumberDto.phoneNumber,
         String(OTP),
-        "MARKET APP ilovasida ro‘yxatdan o‘tish uchun tasdiqlash kodi:"
+        'MARKET APP ilovasining telefon raqamni almashtirish uchun kod:',
       );
     } catch (error) {
       console.log(error);
@@ -248,7 +248,7 @@ export class UserService implements IUserService {
       await this.smsService.sendSms(
         sendOtpAgainDto.phoneNumber,
         String(OTP),
-        'MARKET APP ilovasida ro‘yxatdan o‘tish uchun tasdiqlash kodi:',
+        'MARKET APP ilovasining telefon raqamni almashtirish uchun kod:',
       );
     } catch (error) {
       console.log(error);
