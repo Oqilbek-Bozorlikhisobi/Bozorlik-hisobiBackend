@@ -3,6 +3,7 @@ import { BaseEntity } from '../../../common/entities/base.entity';
 import { Market } from '../../market/entities/market.entity';
 import { Product } from '../../products/entities/product.entity';
 import { User } from '../../user/entities/user.entity';
+import { Unit } from '../../unit/entities/unit.entity';
 
 @Entity('market_list')
 export class MarketList extends BaseEntity {
@@ -53,4 +54,8 @@ export class MarketList extends BaseEntity {
   @ManyToOne(() => User, (user) => user.marketLists, { nullable: true })
   @JoinColumn({ name: 'buying_by' })
   user: User;
+
+  @ManyToOne(() => Unit, (unit) => unit.createdAt, { nullable: true })
+  @JoinColumn({ name: 'unit_id' })
+  unit: Unit;
 }

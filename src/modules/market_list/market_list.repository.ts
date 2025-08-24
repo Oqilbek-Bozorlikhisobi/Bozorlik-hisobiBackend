@@ -20,6 +20,7 @@ export class MarketListRepository implements IMarketListRepository {
         market: true,
         product: true,
         user: true,
+        unit: true
       },
     })
     return data;

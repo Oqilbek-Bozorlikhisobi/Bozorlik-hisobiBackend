@@ -156,6 +156,7 @@ export class MarketService implements IMarketService {
           newMl.product = ml?.product;
           newMl.productName = ml?.productName;
           newMl.quantity = ml?.quantity;
+          newMl.unit = ml?.unit
           await this.marketListRepository.create(newMl);
         }),
       );

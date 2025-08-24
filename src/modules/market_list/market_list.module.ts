@@ -7,6 +7,7 @@ import { MarketModule } from '../market/market.module';
 import { UserModule } from '../user/user.module';
 import { ProductsModule } from '../products/products.module';
 import { MarketListRepository } from './market_list.repository';
+import { UnitModule } from '../unit/unit.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { MarketListRepository } from './market_list.repository';
     forwardRef(() => MarketModule),
     UserModule,
     ProductsModule,
+    UnitModule
   ],
   controllers: [MarketListController],
   providers: [

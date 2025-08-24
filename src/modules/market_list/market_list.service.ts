@@ -13,6 +13,8 @@ import { ProductNotFoundExeption } from '../products/exeptions/products.exeption
 import { MarketListNotFoundExeption } from './exetions/market-list.exeption';
 import { CheckListDto } from './dto/check-list.dto';
 import { UserNotFound } from '../user/exeptions/user.esxeption';
+import { IUnitRepository } from '../unit/interfaces/unit.reposotory';
+import { UnitNotFoundException } from '../unit/exeptions/unit.exeption';
 
 @Injectable()
 export class MarketListService implements IMarketListService {
@@ -25,6 +27,8 @@ export class MarketListService implements IMarketListService {
     private readonly productRepository: IProductsRepository,
     @Inject('IUserRepository')
     private readonly userRepository: IUserRepository,
+    @Inject('IUnitRepository')
+    private readonly unitRepository: IUnitRepository,
   ) {}
 
   async create(dto: CreateMarketListDto): Promise<ResData<MarketList>> {
@@ -32,9 +36,14 @@ export class MarketListService implements IMarketListService {
     if (!checkMarket) {
       throw new MarketNotFoundException();
     }
+    const checkUnit = await this.unitRepository.findById(dto.unitId)
+    if (!checkUnit) {
+      throw new UnitNotFoundException();
+    }
     const newMarketList = new MarketList();
     Object.assign(newMarketList, dto);
     newMarketList.market = checkMarket;
+    newMarketList.unit = checkUnit;
 
     if (dto.productId) {
       const checkProduct = await this.productRepository.findById(dto.productId);
@@ -67,7 +76,10 @@ export class MarketListService implements IMarketListService {
     return new ResData<MarketList>('ok', 200, foundData);
   }
 
-  async checkMarketListIsBuying(id: string, dto: CheckListDto): Promise<ResData<MarketList>> {
+  async checkMarketListIsBuying(
+    id: string,
+    dto: CheckListDto,
+  ): Promise<ResData<MarketList>> {
     const foundData = await this.marketListRepository.findById(id);
     if (!foundData) {
       throw new MarketListNotFoundExeption();
