@@ -60,9 +60,21 @@ export class MarketService implements IMarketService {
     if (!user) {
       throw new UserNotFound();
     }
+
+    // Avval shu userga tegishli barcha marketlarni olib kelamiz
+    const markets = await this.marketRepository.findAll(dto.userId);
+    for (const market of markets) {
+      if (market.isCurrent) {
+        market.isCurrent = false;
+        await this.marketRepository.update(market);
+      }
+    }
+
+    // Yangi market yaratamiz va uni current qilamiz
     const newMarket = new Market();
     Object.assign(newMarket, dto);
     newMarket.users = [user];
+    newMarket.isCurrent = true;
 
     const data = await this.marketRepository.create(newMarket);
 
@@ -156,7 +168,7 @@ export class MarketService implements IMarketService {
           newMl.product = ml?.product;
           newMl.productName = ml?.productName;
           newMl.quantity = ml?.quantity;
-          newMl.unit = ml?.unit
+          newMl.unit = ml?.unit;
           await this.marketListRepository.create(newMl);
         }),
       );
