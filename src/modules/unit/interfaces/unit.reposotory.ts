@@ -13,4 +13,5 @@ export interface IUnitRepository {
   update(entity: Unit): Promise<Unit>;
   delete(entity: Unit): Promise<Unit>;
   findById(id: string): Promise<Unit | null>;
+  findAllWithOutPagination(): Promise<Unit[]>;
 }

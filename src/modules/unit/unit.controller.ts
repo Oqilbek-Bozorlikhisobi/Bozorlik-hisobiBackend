@@ -37,6 +37,11 @@ export class UnitController {
     return this.unitService.findAll(query);
   }
 
+  @Get('all')
+  findAllWithOutPagination() {
+    return this.unitService.findAllWithOutPagination();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.unitService.findOneById(id);

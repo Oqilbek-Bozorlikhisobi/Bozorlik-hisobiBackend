@@ -59,4 +59,8 @@ export class UnitRepository implements IUnitRepository {
   async delete(entity: Unit): Promise<Unit> {
     return await this.unitRepository.remove(entity);
   }
+
+  async findAllWithOutPagination(): Promise<Unit[]> {
+    return await this.unitRepository.find();
+  }
 }

@@ -21,4 +21,5 @@ export interface IUnitService {
     dto: UpdateUnitDto,
   ): Promise<ResData<Unit>>;
   delete(id: string): Promise<ResData<Unit>>;
+  findAllWithOutPagination(): Promise<ResData<Unit[]>>;
 }

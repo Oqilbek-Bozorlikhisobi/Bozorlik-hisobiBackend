@@ -22,9 +22,7 @@ export class UnitService implements IUnitService {
     return new ResData<Unit>('Unit created successfully', 201, data);
   }
 
-  async findAll(
-    query: QuerySearchDto,
-  ): Promise<
+  async findAll(query: QuerySearchDto): Promise<
     ResData<{
       items: Unit[];
       page: number;
@@ -69,5 +67,10 @@ export class UnitService implements IUnitService {
     }
     const data = await this.unitRepository.delete(foundData);
     return new ResData<Unit>('Unit deleted successfully', 200, data);
+  }
+
+  async findAllWithOutPagination(): Promise<ResData<Unit[]>> {
+    const data = await this.unitRepository.findAllWithOutPagination();
+    return new ResData<Unit[]>('ok', 200, data);
   }
 }
