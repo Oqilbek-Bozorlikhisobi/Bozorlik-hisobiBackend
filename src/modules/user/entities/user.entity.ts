@@ -25,11 +25,15 @@ export class User extends BaseEntity {
   hashedRefreshToken: string;
 
   @ManyToMany(() => Market, (markets) => markets.users)
-  markets: Market[]
+  markets: Market[];
 
-  @OneToMany(() => MarketList, (marketList) => marketList.user, {onDelete: "CASCADE"})
+  @OneToMany(() => MarketList, (marketList) => marketList.user, {
+    onDelete: 'CASCADE',
+  })
   marketLists: MarketList[];
 
-  @OneToMany(() => Feedback, (feedback) => feedback.user)
+  @OneToMany(() => Feedback, (feedback) => feedback.user, {
+    onDelete: 'CASCADE',
+  })
   feedbacks: Feedback[];
 }
