@@ -37,7 +37,7 @@ export class MarketList extends BaseEntity {
 
   @Column({
     type: 'decimal',
-    precision: 10,
+    precision: 15,
     scale: 2,
     name: 'price',
     nullable: true,

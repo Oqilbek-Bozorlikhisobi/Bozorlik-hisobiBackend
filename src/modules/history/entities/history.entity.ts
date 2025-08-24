@@ -12,7 +12,7 @@ export class History extends BaseEntity {
   @Column({ type: 'jsonb', name: 'market_lists' })
   marketLists: any;
   
-  @Column({type: 'decimal', precision: 10, scale: 2, default: 0, name: 'total_price'})
+  @Column({type: 'decimal', precision: 15, scale: 2, default: 0, name: 'total_price'})
   totalPrice : number
 
   @Column({type: "varchar", name:"location", nullable:true})
