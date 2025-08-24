@@ -11,7 +11,7 @@ export async function generateTokens(
 ): Promise<Tokens> {
   const payload = {
     id: entity.id,
-    username: role === RoleEnum.ADMIN ? (entity as Admin).createdAt : (entity as User).phoneNumber,
+    username: role === RoleEnum.ADMIN ? (entity as Admin).login : (entity as User).phoneNumber,
     role
   };
 

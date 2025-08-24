@@ -15,7 +15,6 @@ import { generateTokens } from '../../common/helpers/generate-token';
 import { IUserRepository } from '../user/interfaces/user.repository';
 import { LoginUserDto } from './dto/login-user.dto';
 import { generateUserTokens } from '../../common/helpers/generate-user-token';
-import { log } from 'console';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { IUserService } from '../user/interfaces/user.service';
 import { generateOTP } from '../../common/helpers/generate-otp';
@@ -86,7 +85,6 @@ export class AuthService {
     const payload = await this.jwtService.verify(refresh_token, {
       secret: process.env.REFRESH_TOKEN_KEY,
     });
-    console.log(11111111111);
 
     if (!payload) {
       throw new InvalidRefreshToken();
@@ -344,27 +342,25 @@ export class AuthService {
       throw new RefreshTokenIsMissingExeption();
     }
     const payload = await this.jwtService.verify(refresh_token, {
-      secret: process.env.REFRESH_TOKEN_USER_KEY,
+      secret: process.env.REFRESH_TOKEN_KEY,
     });
     if (!payload) {
       throw new InvalidRefreshToken();
     }
-    const user = await this.userRepository.findByPhoneNumber(
-      payload.phoneNumber,
-    );
+    const user = await this.userRepository.findByPhoneNumber(payload.username);
     if (!user) {
       throw new InvalidRefreshToken();
     }
-
     const validRefreshToken = await compare(
       refresh_token,
       user.hashedRefreshToken,
     );
+    
     if (!validRefreshToken) {
       throw new InvalidRefreshToken();
     }
 
-    const tokens = await generateTokens(user, this.jwtService, RoleEnum.ADMIN);
+    const tokens = await generateTokens(user, this.jwtService, RoleEnum.USER);
     const hashedRefreshToken = await hash(tokens.refresh_token, 7);
     user.hashedRefreshToken = hashedRefreshToken;
     await this.userRepository.update(user);

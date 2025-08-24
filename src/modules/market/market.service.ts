@@ -32,6 +32,29 @@ export class MarketService implements IMarketService {
     private readonly marketListRepository: IMarketListRepository,
   ) {}
 
+  private async calculateMarket(market: Market): Promise<Market> {
+    if (market.marketLists && market.marketLists.length > 0) {
+      const allBought = market.marketLists.every((ml) => ml.isBuying);
+      market.isAllBuy = allBought;
+
+      const totalPrice = market.marketLists
+        .filter((ml) => ml.isBuying)
+        .reduce((sum, ml) => {
+          const price = Number(ml.price ?? 0);
+          const quantity = Number(ml.quantity ?? 1);
+          return sum + price * quantity;
+        }, 0);
+
+      (market as any).totalPrice = totalPrice;
+    } else {
+      market.isAllBuy = false;
+      (market as any).totalPrice = 0;
+    }
+
+    await this.marketRepository.update(market);
+    return market;
+  }
+
   async create(dto: CreateMarketDto): Promise<ResData<Market>> {
     const user = await this.userRepository.findOneById(dto.userId);
     if (!user) {
@@ -48,32 +71,12 @@ export class MarketService implements IMarketService {
 
   async findAll(id: string): Promise<ResData<Array<Market>>> {
     const data = await this.marketRepository.findAll(id);
-    data.forEach(async (market) => {
-      if (market.marketLists && market.marketLists.length > 0) {
-        // Hamma isBuying true bo‘lsa
-        const allBought = market.marketLists.every(
-          (marketList) => marketList.isBuying === true,
-        );
-        market.isAllBuy = allBought;
 
-        // Faqat isBuying = true bo‘lganlarni total price hisoblash
-        const totalPrice = market.marketLists
-          .filter((ml) => ml.isBuying)
-          .reduce((sum, ml) => {
-            const price = Number(ml.price ?? 0);
-            const quantity = Number(ml.quantity ?? 1);
-            return sum + price * quantity;
-          }, 0);
+    const calculated = await Promise.all(
+      data.map((market) => this.calculateMarket(market)),
+    );
 
-        // DBda yo‘q bo‘lsa response uchun qo‘shib qo‘yish
-        (market as any).totalPrice = totalPrice;
-      } else {
-        market.isAllBuy = false;
-        (market as any).totalPrice = 0;
-      }
-      await this.marketRepository.update(market);
-    });
-    return new ResData<Array<Market>>('ok', 200, data);
+    return new ResData<Array<Market>>('ok', 200, calculated);
   }
 
   async findOneById(id: string): Promise<ResData<Market>> {
@@ -81,7 +84,12 @@ export class MarketService implements IMarketService {
     if (!foundData) {
       throw new MarketNotFoundException();
     }
-    return new ResData<Market>('ok', 200, foundData);
+
+    return new ResData<Market>(
+      'ok',
+      200,
+      await this.calculateMarket(foundData),
+    );
   }
 
   async update(id: string, dto: UpdateMarketDto): Promise<ResData<Market>> {
@@ -163,29 +171,11 @@ export class MarketService implements IMarketService {
       return new ResData<Market>('ok', 200, null);
     }
 
-    if (currentMarket.marketLists && currentMarket.marketLists.length > 0) {
-      const allBought = currentMarket.marketLists.every(
-        (ml) => ml.isBuying === true,
-      );
-      currentMarket.isAllBuy = allBought;
-
-      const totalPrice = currentMarket.marketLists
-        .filter((ml) => ml.isBuying)
-        .reduce((sum, ml) => {
-          const price = Number(ml.price ?? 0);
-          const quantity = Number(ml.quantity ?? 1);
-          return sum + price * quantity;
-        }, 0);
-
-      (currentMarket as any).totalPrice = totalPrice;
-    } else {
-      currentMarket.isAllBuy = false;
-      (currentMarket as any).totalPrice = 0;
-    }
-
-    await this.marketRepository.update(currentMarket);
-
-    return new ResData<Market>('ok', 200, currentMarket);
+    return new ResData<Market>(
+      'ok',
+      200,
+      await this.calculateMarket(currentMarket),
+    );
   }
 
   async doMarketIsCurrent(
