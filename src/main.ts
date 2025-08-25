@@ -44,8 +44,8 @@ async function bootstrap() {
   );
 
   const config = new DocumentBuilder()
-    .setTitle('PsyEdu Management API')
-    .setDescription('API documentation for the PsyEdu Management System')
+    .setTitle('Bozorlik Management API')
+    .setDescription('API documentation for the Bozorlik Management System')
     .setVersion('1.0')
     .addTag('apis')
     .addBearerAuth(
