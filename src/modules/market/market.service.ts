@@ -18,6 +18,8 @@ import { HistoryNotFoundException } from '../history/exeptions/history.exeption'
 import { CreateMarketByHistoryIdDto } from './dto/create-market-by-historyid.dto';
 import { MarketList } from '../market_list/entities/market_list.entity';
 import { IMarketListRepository } from '../market_list/interfaces/market-list.repository';
+import { IProductsRepository } from '../products/interfaces/products.repository';
+import { IUnitRepository } from '../unit/interfaces/unit.reposotory';
 
 @Injectable()
 export class MarketService implements IMarketService {
@@ -30,6 +32,10 @@ export class MarketService implements IMarketService {
     private readonly historyRepository: IHistoryRepository,
     @Inject('IMarketListRepository')
     private readonly marketListRepository: IMarketListRepository,
+    @Inject('IUnitRepository')
+    private readonly unitRepository: IUnitRepository,
+    @Inject('IProductsRepository')
+    private readonly productRepository: IProductsRepository,
   ) {}
 
   private async calculateMarket(market: Market): Promise<Market> {
@@ -165,10 +171,32 @@ export class MarketService implements IMarketService {
         history.marketLists.map(async (ml) => {
           const newMl = new MarketList();
           newMl.market = data;
-          newMl.product = ml?.product;
-          newMl.productName = ml?.productName;
+
+          if (ml.product) {
+            const product = await this.productRepository.findById(
+              ml.product.id,
+            );
+            if (product) {
+              newMl.product = product;
+              newMl.productName = ml.productName ?? product.titleUz;
+            } else {
+              newMl.product = null;
+              newMl.productName = ml.product?.titleUz ?? ml.productName;
+            }
+          } else {
+            newMl.product = null;
+            newMl.productName = ml.productName ?? null;
+          }
+
+          // ✅ unitni tekshiramiz
+          if (ml.unit) {
+            const unit = await this.unitRepository.findById(ml.unit.id);
+            newMl.unit = unit ?? null;
+          } else {
+            newMl.unit = null;
+          }
+
           newMl.quantity = ml?.quantity;
-          newMl.unit = ml?.unit;
           await this.marketListRepository.create(newMl);
         }),
       );

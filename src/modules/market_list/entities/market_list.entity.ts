@@ -55,7 +55,7 @@ export class MarketList extends BaseEntity {
   @JoinColumn({ name: 'buying_by' })
   user: User;
 
-  @ManyToOne(() => Unit, (unit) => unit.createdAt, { nullable: true, onDelete: "SET NULL" })
+  @ManyToOne(() => Unit, (unit) => unit.marketLists, { nullable: true, onDelete: "SET NULL" })
   @JoinColumn({ name: 'unit_id' })
   unit: Unit | null;
 }
