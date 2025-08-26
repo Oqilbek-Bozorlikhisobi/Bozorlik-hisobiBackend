@@ -11,8 +11,4 @@ export class Unit extends BaseEntity {
   @OneToMany(() => MarketList, (marketList) => marketList.unit)
   marketLists: MarketList[];
 
-
-//   @Column({ type: 'varchar', name: "description", nullable: true })
-//   description: string;
-
 }

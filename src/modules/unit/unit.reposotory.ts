@@ -61,6 +61,8 @@ export class UnitRepository implements IUnitRepository {
   }
 
   async findAllWithOutPagination(): Promise<Unit[]> {
-    return await this.unitRepository.find();
+    return await this.unitRepository.find({
+      relations: { marketLists: true },
+    });
   }
 }
