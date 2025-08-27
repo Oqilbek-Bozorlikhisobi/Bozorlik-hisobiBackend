@@ -35,6 +35,9 @@ import { RoleEnum } from '../../common/enums/enum';
 import { RestorePasswordDto } from './dto/restore-password.dto';
 import { SendOtpAgainForRegisterDto } from './dto/send-otp-again-for-register.dto';
 
+const DEFAULT_PHONE = '+998907777777';
+const DEFAULT_OTP = '7777';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -127,11 +130,14 @@ export class AuthService {
     if (condidate) {
       throw new UserAlreadyExists();
     }
-    const OTP = generateOTP();
+    let OTP = generateOTP();
     const now = new Date();
     const expirationTime = AddMinutesToDate(now, 5);
     await this.otpRepository.delete({ phoneNumber: data.phoneNumber });
 
+    if (data.phoneNumber === DEFAULT_PHONE) {
+      OTP = DEFAULT_OTP;
+    }
     const newOtp = await this.otpRepository.save({
       otp: OTP,
       phoneNumber: data.phoneNumber,
@@ -146,15 +152,17 @@ export class AuthService {
 
     const encodeData = await encode(JSON.stringify(details));
 
-    try {
-      await this.smsService.sendSms(
-        data.phoneNumber,
-        String(OTP),
-        'MARKET APP ilovasida ro‘yxatdan o‘tish uchun tasdiqlash kodi:',
-      );
-    } catch (error) {
-      console.log(error);
-      return { message: 'Sms not sent' };
+    if (data.phoneNumber !== DEFAULT_PHONE) {
+      try {
+        await this.smsService.sendSms(
+          data.phoneNumber,
+          String(OTP),
+          'MARKET APP ilovasida ro‘yxatdan o‘tish uchun tasdiqlash kodi:',
+        );
+      } catch (error) {
+        console.log(error);
+        return { message: 'Sms not sent' };
+      }
     }
 
     return {
@@ -171,6 +179,38 @@ export class AuthService {
     if (details.phoneNumber !== verifyOtp.phoneNumber) {
       throw new OtpDidntSend();
     }
+
+    // Agar default telefon raqam va OTP bo‘lsa -> tekshiruvdan o‘tkazmasdan o‘tkazamiz
+    if (
+      verifyOtp.phoneNumber === DEFAULT_PHONE &&
+      verifyOtp.otp === DEFAULT_OTP
+    ) {
+      const userData: CreateUserDto = details.userData;
+      const newUser = await this.userService.create(userData);
+
+      if (!newUser || !newUser.data) {
+        throw new BadRequestException('User not created');
+      }
+
+      const user = newUser.data;
+      const tokens = await generateTokens(user, this.jwtService, RoleEnum.USER);
+      const hashedRefreshToken = await hash(tokens.refresh_token, 7);
+      user.hashedRefreshToken = hashedRefreshToken;
+      await this.userRepository.update(user);
+
+      res.cookie('refresh_token', tokens.refresh_token, {
+        maxAge: Number(process.env.COOKIE_TIME),
+        httpOnly: true,
+      });
+
+      return {
+        message: 'User registered in successfully (default)',
+        user: user,
+        access_token: tokens.access_token,
+        refresh_token: tokens.refresh_token,
+      };
+    }
+
     const resultOtp = await this.otpRepository.findOne({
       where: {
         id: details.otpId,
@@ -355,7 +395,7 @@ export class AuthService {
       refresh_token,
       user.hashedRefreshToken,
     );
-    
+
     if (!validRefreshToken) {
       throw new InvalidRefreshToken();
     }
