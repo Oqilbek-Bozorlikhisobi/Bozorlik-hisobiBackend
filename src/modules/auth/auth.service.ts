@@ -37,7 +37,7 @@ import { SendOtpAgainForRegisterDto } from './dto/send-otp-again-for-register.dt
 import { User } from '../user/entities/user.entity';
 import { v4 as uuidv4 } from 'uuid';
 
-const DEFAULT_PHONE = '+998907777777';
+const DEFAULT_PHONE = '+998907894561';
 const DEFAULT_OTP = '7777';
 const DEFAULT_PASSWORD = "qwerty12345"
 
@@ -352,19 +352,37 @@ export class AuthService {
   }
 
   async userLogin(data: LoginUserDto, res: Response) {
+    const { phoneNumber, password } = data;
 
-    if (data.phoneNumber === DEFAULT_PHONE && data.password === DEFAULT_PASSWORD) {
-      const defaultUser = {
-        id: uuidv4(), // UUID ishlatyapmiz
-        phoneNumber: DEFAULT_PHONE,
-        fullName: 'Default Test User',
-      } as User;
+    if (phoneNumber === DEFAULT_PHONE && password === DEFAULT_PASSWORD) {
+      let user = await this.userRepository.findByPhoneNumber(DEFAULT_PHONE);
 
-      const tokens = await generateTokens(
-        defaultUser,
-        this.jwtService,
-        RoleEnum.USER,
-      );
+      // Agar mavjud bo‘lmasa — yangi foydalanuvchi yaratamiz
+      if (!user) {
+        const hashedPassword = await hash(DEFAULT_PASSWORD, 7);
+        const newUser = await this.userService.create({
+          phoneNumber: DEFAULT_PHONE,
+          password: DEFAULT_PASSWORD,
+          confirmPassword: DEFAULT_PASSWORD, 
+          fullName: 'Default Test User',
+          region: 'Tashkent', 
+          gender: 'male', 
+        });
+
+        if (!newUser || !newUser.data) {
+          throw new BadRequestException('Default user not created');
+        }
+
+        user = newUser.data;
+        user.hashedPassword = hashedPassword;
+        await this.userRepository.update(user);
+      }
+
+      // Token generatsiya qilish
+      const tokens = await generateTokens(user, this.jwtService, RoleEnum.USER);
+      const hashedRefreshToken = await hash(tokens.refresh_token, 7);
+      user.hashedRefreshToken = hashedRefreshToken;
+      await this.userRepository.update(user);
 
       res.cookie('refresh_token', tokens.refresh_token, {
         maxAge: Number(process.env.COOKIE_TIME),
@@ -373,13 +391,12 @@ export class AuthService {
 
       return {
         message: 'Default user logged in successfully',
-        user: defaultUser,
+        user,
         access_token: tokens.access_token,
         refresh_token: tokens.refresh_token,
       };
     }
 
-    const { phoneNumber, password } = data;
     const user = await this.userRepository.findByPhoneNumber(phoneNumber);
     if (!user) {
       throw new PhoneNumberOrPasswordIncorrect();
