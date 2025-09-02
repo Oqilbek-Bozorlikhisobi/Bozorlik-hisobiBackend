@@ -34,9 +34,12 @@ import {
 import { RoleEnum } from '../../common/enums/enum';
 import { RestorePasswordDto } from './dto/restore-password.dto';
 import { SendOtpAgainForRegisterDto } from './dto/send-otp-again-for-register.dto';
+import { User } from '../user/entities/user.entity';
+import { v4 as uuidv4 } from 'uuid';
 
 const DEFAULT_PHONE = '+998907777777';
 const DEFAULT_OTP = '7777';
+const DEFAULT_PASSWORD = "qwerty12345"
 
 @Injectable()
 export class AuthService {
@@ -349,6 +352,33 @@ export class AuthService {
   }
 
   async userLogin(data: LoginUserDto, res: Response) {
+
+    if (data.phoneNumber === DEFAULT_PHONE && data.password === DEFAULT_PASSWORD) {
+      const defaultUser = {
+        id: uuidv4(), // UUID ishlatyapmiz
+        phoneNumber: DEFAULT_PHONE,
+        fullName: 'Default Test User',
+      } as User;
+
+      const tokens = await generateTokens(
+        defaultUser,
+        this.jwtService,
+        RoleEnum.USER,
+      );
+
+      res.cookie('refresh_token', tokens.refresh_token, {
+        maxAge: Number(process.env.COOKIE_TIME),
+        httpOnly: true,
+      });
+
+      return {
+        message: 'Default user logged in successfully',
+        user: defaultUser,
+        access_token: tokens.access_token,
+        refresh_token: tokens.refresh_token,
+      };
+    }
+
     const { phoneNumber, password } = data;
     const user = await this.userRepository.findByPhoneNumber(phoneNumber);
     if (!user) {
