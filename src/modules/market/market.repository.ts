@@ -32,6 +32,7 @@ export class MarketRepository implements IMarketRepository {
         return `EXISTS ${subQuery}`;
       })
       .setParameter('userId', userId)
+      .orderBy('marketList.createdAt', 'ASC')
       .getMany();
   }
 
@@ -44,6 +45,11 @@ export class MarketRepository implements IMarketRepository {
           product: true,
           user: true,
           unit: true,
+        },
+      },
+      order: {
+        marketLists: {
+          createdAt: 'ASC',
         },
       },
     });
@@ -77,6 +83,7 @@ export class MarketRepository implements IMarketRepository {
         return `EXISTS ${subQuery}`;
       })
       .setParameter('userId', userId)
+      .orderBy('marketList.createdAt', 'ASC')
       .getOne();
   }
 }
