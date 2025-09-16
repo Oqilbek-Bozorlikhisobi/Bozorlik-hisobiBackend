@@ -51,7 +51,7 @@ export class MarketList extends BaseEntity {
   @Column({ type: 'boolean', name: 'is_buying', default: false })
   isBuying: boolean;
 
-  @ManyToOne(() => User, (user) => user.marketLists, { nullable: true })
+  @ManyToOne(() => User, (user) => user.marketLists, { nullable: true, onDelete: "SET NULL" })
   @JoinColumn({ name: 'buying_by' })
   user: User;
 

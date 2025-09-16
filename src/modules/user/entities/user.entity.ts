@@ -28,7 +28,7 @@ export class User extends BaseEntity {
   markets: Market[];
 
   @OneToMany(() => MarketList, (marketList) => marketList.user, {
-    onDelete: 'CASCADE',
+    onDelete: 'SET NULL',
   })
   marketLists: MarketList[];
 
