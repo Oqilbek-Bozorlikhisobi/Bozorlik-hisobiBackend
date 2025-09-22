@@ -47,8 +47,8 @@ export class MarketService implements IMarketService {
         .filter((ml) => ml.isBuying)
         .reduce((sum, ml) => {
           const price = Number(ml.price ?? 0);
-          // const quantity = Number(ml.quantity ?? 1);
-          return sum + price;
+          const quantity = Number(ml.quantity ?? 1);
+          return sum + price * quantity;
         }, 0);
 
       (market as any).totalPrice = totalPrice;
