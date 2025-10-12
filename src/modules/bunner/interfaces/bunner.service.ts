@@ -7,9 +7,7 @@ import { Bunner } from '../entities/bunner.entity';
 export interface IBunnerService {
   create(
     dto: CreateBunnerDto,
-    fileEn: Express.Multer.File,
-    fileRu: Express.Multer.File,
-    fileUz: Express.Multer.File,
+    file: Express.Multer.File,
   ): Promise<ResData<Bunner>>;
   findAll(query: QuerySearchDto): Promise<
     ResData<{
@@ -24,9 +22,7 @@ export interface IBunnerService {
   update(
     id: string,
     dto: UpdateBunnerDto,
-    fileEn?: Express.Multer.File,
-    fileRu?: Express.Multer.File,
-    fileUz?: Express.Multer.File,
+    file?: Express.Multer.File,
   ): Promise<ResData<Bunner>>;
   delete(id: string): Promise<ResData<Bunner>>;
 }

@@ -19,16 +19,23 @@ export class CreateProductDto {
 
   @ApiProperty({
     description: 'Product title in uzbek',
-    example: 'Сок',
+    example: 'sok',
   })
   @IsString()
   titleUz: string;
 
   @ApiProperty({
+    description: 'Product title in uzbek',
+    example: 'Сок',
+  })
+  @IsString()
+  titleUzk: string;
+
+  @ApiProperty({
     description: 'Category unique id (UUID)',
     example: '550e8400-e29b-41d4-a716-446655440000',
   })
-  @IsUUID()
+  @IsString()
   categoryId: string;
 
   @IsOptional()

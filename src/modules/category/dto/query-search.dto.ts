@@ -4,8 +4,7 @@ import { Type } from 'class-transformer';
 
 export class QuerySearchDto {
   @ApiPropertyOptional({
-    description: 'Title bo‘yicha qidiruv (EN, RU, UZ)',
-    example: 'milk',
+    description: 'Title bo‘yicha qidiruv (EN, RU, UZ, UZK)',
   })
   @IsOptional()
   @IsString()
@@ -13,7 +12,6 @@ export class QuerySearchDto {
 
   @ApiPropertyOptional({
     description: 'Nechanchi sahifa',
-    example: 1,
   })
   @IsOptional()
   @Type(() => Number)
@@ -22,10 +20,16 @@ export class QuerySearchDto {
 
   @ApiPropertyOptional({
     description: 'Sahifadagi elementlar soni',
-    example: 10,
   })
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
   limit?: number;
+
+  @ApiPropertyOptional({
+    description: "ParentId boyicha search"
+  })
+  @IsOptional()
+  @IsString()
+  parentId?: string;
 }

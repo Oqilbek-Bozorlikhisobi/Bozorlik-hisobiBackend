@@ -41,4 +41,13 @@ export class CreateMarketListDto {
   @IsOptional()
   @IsUUID()
   unitId:string
+
+  @ApiProperty({
+    description: "Qo'shilib turgan maxsulot uchun izox",
+    example: "Suvdi anansligini oling",
+    required: false
+  })
+  @IsOptional()
+  @IsString()
+  description: string
 }

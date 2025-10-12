@@ -12,12 +12,12 @@ export class Bunner extends BaseEntity {
   @Column({ type: 'varchar', name: 'name_uz' })
   nameUz: string;
 
-  @Column({ type: 'varchar', name: 'image_en' })
-  imageEn: string;
+  @Column({type: "varchar", name: "name_uzk", nullable: true})
+  nameUzk: string;
 
-  @Column({ type: 'varchar', name: 'image_ru' })
-  imageRu: string;
+  @Column({ type: "varchar", name: "image", nullable: true })
+  image: string;
 
-  @Column({ type: 'varchar', name: 'image_uz' })
-  imageUz: string;
+  @Column({ type: 'varchar', name: 'link', nullable: true})
+  link: string;
 }

@@ -5,3 +5,9 @@ export class CategoryNotFoundException extends HttpException{
         super('Category not found', 404)
     }
 }
+
+export class CategoryCannotBeOwnParentException extends HttpException{
+    constructor(){
+        super('Category cannot be its own parent', 400);
+    }
+}

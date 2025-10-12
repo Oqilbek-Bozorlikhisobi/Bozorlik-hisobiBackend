@@ -15,35 +15,56 @@ export class CategoryRepository implements ICategoryRepository {
     return newCategory;
   }
 
-  async findAll(
-    query: QuerySearchDto,
-  ): Promise<{
+  async findAll(query: QuerySearchDto): Promise<{
     data: Category[];
     total: number;
     page: number;
     limit: number;
     totalPages: number;
   }> {
-    const { search = '', page = 1, limit } = query;
+    const { search = '', page = 1, limit, parentId } = query;
 
+    // Asosiy qidiruv shartlari
     const where = [
       { titleEn: ILike(`%${search}%`) },
       { titleRu: ILike(`%${search}%`) },
       { titleUz: ILike(`%${search}%`) },
+      { titleUzk: ILike(`%${search}%`) },
     ];
+
+    // 🔍 parentId bo‘yicha filterlash
+    let finalWhere: any[];
+
+    if (parentId && parentId !== 'null' && parentId !== 'undefined') {
+      // Subkategoriyalarni olish
+      finalWhere = where.map((cond) => ({
+        ...cond,
+        parent: { id: parentId },
+      }));
+    } else {
+      // Root kategoriyalarni olish (parent = null)
+      finalWhere = where.map((cond) => ({
+        ...cond,
+        parent: null,
+      }));
+    }
 
     let data: Category[];
     let total: number;
 
     if (limit && limit > 0) {
       [data, total] = await this.categoryRepository.findAndCount({
-        where,
+        where: finalWhere,
+        relations: ['parent', 'children'],
         skip: (page - 1) * limit,
         take: limit,
+        order: { createdAt: 'DESC' },
       });
     } else {
       [data, total] = await this.categoryRepository.findAndCount({
-        where,
+        where: finalWhere,
+        relations: ['parent', 'children'],
+        order: { createdAt: 'DESC' },
       });
     }
 
@@ -54,7 +75,7 @@ export class CategoryRepository implements ICategoryRepository {
       data,
       total,
       page,
-      limit: limit && limit > 0 ? limit : total, // null o‘rniga total yoki 0
+      limit: appliedLimit,
       totalPages,
     };
   }
@@ -62,6 +83,7 @@ export class CategoryRepository implements ICategoryRepository {
   async findById(id: string): Promise<Category | null> {
     return await this.categoryRepository.findOne({
       where: { id },
+      relations: ['parent', 'children'],
     });
   }
 

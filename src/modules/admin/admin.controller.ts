@@ -14,10 +14,10 @@ export class AdminController {
     @Inject('IAdminService') private readonly adminService: AdminService,
   ) {}
 
-  @Post()
-  create(@Body() createAdminDto: CreateAdminDto) {
-    return this.adminService.create(createAdminDto);
-  }
+  // @Post()
+  // create(@Body() createAdminDto: CreateAdminDto) {
+  //   return this.adminService.create(createAdminDto);
+  // }
 
   @Auth(RoleEnum.ADMIN)
   @Get()

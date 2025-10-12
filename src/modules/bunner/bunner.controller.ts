@@ -34,9 +34,7 @@ export class BunnerController {
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(
     FileFieldsInterceptor([
-      { name: 'fileEn', maxCount: 1 },
-      { name: 'fileRu', maxCount: 1 },
-      { name: 'fileUz', maxCount: 1 },
+      { name: 'file', maxCount: 1 },
     ]),
   )
   @Auth(RoleEnum.ADMIN)
@@ -45,16 +43,12 @@ export class BunnerController {
     @Body() createBunnerDto: CreateBunnerDto,
     @UploadedFiles()
     files: {
-      fileEn?: Express.Multer.File[];
-      fileRu?: Express.Multer.File[];
-      fileUz?: Express.Multer.File[];
+      file?: Express.Multer.File[];
     },
   ) {
     return this.bunnerService.create(
       createBunnerDto,
-      files.fileEn![0],
-      files.fileRu![0],
-      files.fileUz![0],
+      files.file![0]
     );
   }
 
@@ -79,9 +73,7 @@ export class BunnerController {
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(
     FileFieldsInterceptor([
-      { name: 'fileEn', maxCount: 1 },
-      { name: 'fileRu', maxCount: 1 },
-      { name: 'fileUz', maxCount: 1 },
+      { name: 'file', maxCount: 1 },
     ]),
   )
   @Auth(RoleEnum.ADMIN)
@@ -91,17 +83,13 @@ export class BunnerController {
     @Body() updateBunnerDto: UpdateBunnerDto,
     @UploadedFiles()
     files: {
-      fileEn?: Express.Multer.File[];
-      fileRu?: Express.Multer.File[];
-      fileUz?: Express.Multer.File[];
+      file?: Express.Multer.File[];
     },
   ) {
     return this.bunnerService.update(
       id,
       updateBunnerDto,
-      files.fileEn?.[0],
-      files.fileRu?.[0],
-      files.fileUz?.[0],
+      files.file?.[0]
     );
   }
 

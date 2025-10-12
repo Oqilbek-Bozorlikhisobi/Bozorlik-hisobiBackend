@@ -1,7 +1,8 @@
-import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity';
 import { User } from '../../user/entities/user.entity';
 import { MarketList } from '../../market_list/entities/market_list.entity';
+import { MarketType } from '../../market_type/entities/market_type.entity';
 
 @Entity('market')
 export class Market extends BaseEntity {
@@ -36,6 +37,14 @@ export class Market extends BaseEntity {
 
   @Column({type: "varchar", name:"location", nullable:true})
   location: string;
+
+  @ManyToOne(() => MarketType, (marketType) => marketType.markets, {
+    onDelete: "SET NULL",
+    nullable:true
+  })
+  @JoinColumn({ name: 'market_type_id' })
+  marketType: MarketType;
+
 
   @Column({type:"boolean", name:"is_current", default:false})
   isCurrent: boolean;

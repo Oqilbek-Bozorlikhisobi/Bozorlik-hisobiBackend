@@ -24,6 +24,7 @@ export class BunnerRepository implements IBunnerRepository {
       { nameEn: ILike(`%${search}%`) },
       { nameRu: ILike(`%${search}%`) },
       { nameUz: ILike(`%${search}%`) },
+      { nameUzk: ILike(`%${search}%`) },
     ];
 
     let data: Bunner[];

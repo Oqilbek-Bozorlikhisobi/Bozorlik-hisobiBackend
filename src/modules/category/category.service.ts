@@ -5,7 +5,7 @@ import { ICategoryRepository } from './interfaces/category.repository';
 import { ICategoryService } from './interfaces/category.service';
 import { ResData } from '../../common/lib/resData';
 import { Category } from './entities/category.entity';
-import { CategoryNotFoundException } from './exeptions/category.exeption';
+import { CategoryCannotBeOwnParentException, CategoryNotFoundException } from './exeptions/category.exeption';
 import { QuerySearchDto } from './dto/query-search.dto';
 import { FileIsMissinExeption } from '../products/exeptions/products.exeption';
 import { FileService } from '../file/file.service';
@@ -28,8 +28,17 @@ export class CategoryService implements ICategoryService {
     }
     const fileName = await this.fileService.saveFile(file);
     dto.image = `${process.env.BASE_URL}files/${fileName}`;
+
     const newCategory = new Category();
     Object.assign(newCategory, dto);
+
+    if (dto.parentId) {
+      const parent = await this.categoryRepository.findById(dto.parentId)
+      if (!parent) {
+        throw new CategoryNotFoundException();
+      }
+      newCategory.parent = parent;
+    }
     const data = await this.categoryRepository.create(newCategory);
 
     return new ResData<Category>('Category created successfully', 201, data);
@@ -81,6 +90,18 @@ export class CategoryService implements ICategoryService {
       const newFileName = await this.fileService.saveFile(file);
       dto.image = `${process.env.BASE_URL}files/${newFileName}`;
     }
+
+    if (dto.parentId) {
+      const parent = await this.categoryRepository.findById(dto.parentId)
+      if (!parent) {
+        throw new CategoryNotFoundException();
+      }
+      if (parent.id === foundData.id) {
+        throw new CategoryCannotBeOwnParentException();
+      }
+      foundData.parent = parent;
+    }
+
     Object.assign(foundData, dto);
     const data = await this.categoryRepository.update(foundData);
 

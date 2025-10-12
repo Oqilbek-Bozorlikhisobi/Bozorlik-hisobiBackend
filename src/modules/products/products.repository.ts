@@ -31,7 +31,7 @@ export class ProductRepository implements IProductsRepository {
     // Search qo‘shish (titleEn, titleRu, titleUz)
     if (search) {
       qb.andWhere(
-        '(product.titleEn ILIKE :search OR product.titleRu ILIKE :search OR product.titleUz ILIKE :search)',
+        '(product.titleEn ILIKE :search OR product.titleRu ILIKE :search OR product.titleUz ILIKE :search OR product.titleUzk ILIKE :search)',
         { search: `%${search}%` },
       );
     }

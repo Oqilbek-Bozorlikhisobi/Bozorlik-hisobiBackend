@@ -23,14 +23,22 @@ export class CreateBunnerDto {
   @IsString()
   nameUz: string;
 
-  @IsOptional()
-  imageRu: string;
+  @ApiProperty({
+    description: 'name in uzbek kiril',
+    example: 'янги',
+  })
+  @IsString()
+  nameUzk: string;
+
+  @ApiProperty({
+    description: "Batafsil uchun link",
+    example: "https://google.com"
+  })
+  @IsString()
+  link:string
 
   @IsOptional()
-  imageEn: string;
-
-  @IsOptional()
-  imageUz: string;
+  image: string;
 
   @ApiProperty({
     description:
@@ -40,25 +48,5 @@ export class CreateBunnerDto {
     required: false,
   })
   @IsOptional()
-  fileEn?: Express.Multer.File;
-
-  @ApiProperty({
-    description:
-      'png, ppt, wbep formatdagi fayl, faqat bitta rasm yuklanadi rus tilida',
-    type: 'string',
-    format: 'binary',
-    required: false,
-  })
-  @IsOptional()
-  fileRu?: Express.Multer.File;
-
-  @ApiProperty({
-    description:
-      'png, ppt, wbep formatdagi fayl, faqat bitta rasm yuklanadi uzbek tilida',
-    type: 'string',
-    format: 'binary',
-    required: false,
-  })
-  @IsOptional()
-  fileUz?: Express.Multer.File;
+  file?: Express.Multer.File;
 }
