@@ -20,6 +20,7 @@ import { MarketList } from '../market_list/entities/market_list.entity';
 import { IMarketListRepository } from '../market_list/interfaces/market-list.repository';
 import { IProductsRepository } from '../products/interfaces/products.repository';
 import { IUnitRepository } from '../unit/interfaces/unit.reposotory';
+import { IMarketTypeRepository } from '../market_type/interfaces/market_type.repository';
 
 @Injectable()
 export class MarketService implements IMarketService {
@@ -36,6 +37,8 @@ export class MarketService implements IMarketService {
     private readonly unitRepository: IUnitRepository,
     @Inject('IProductsRepository')
     private readonly productRepository: IProductsRepository,
+    @Inject('IMarketTypeRepository')
+    private readonly marketTypeRepository: IMarketTypeRepository,
   ) {}
 
   private async calculateMarket(market: Market): Promise<Market> {
@@ -67,6 +70,13 @@ export class MarketService implements IMarketService {
       throw new UserNotFound();
     }
 
+    const marketType = await this.marketTypeRepository.findById(
+      dto.marketTypeId,
+    );
+    if (!marketType) {
+      throw new MarketNotFoundException();
+    }
+
     // Avval shu userga tegishli barcha marketlarni olib kelamiz
     const markets = await this.marketRepository.findAll(dto.userId);
     for (const market of markets) {
@@ -80,6 +90,8 @@ export class MarketService implements IMarketService {
     const newMarket = new Market();
     Object.assign(newMarket, dto);
     newMarket.users = [user];
+    newMarket.marketType = marketType;
+    newMarket.marketCreator = dto.userId;
     newMarket.isCurrent = true;
 
     const data = await this.marketRepository.create(newMarket);
@@ -114,6 +126,15 @@ export class MarketService implements IMarketService {
     const foundData = await this.marketRepository.findById(id);
     if (!foundData) {
       throw new MarketNotFoundException();
+    }
+    if (dto.marketTypeId) {
+      const marketType = await this.marketTypeRepository.findById(
+        dto.marketTypeId,
+      );
+      if (!marketType) {
+        throw new MarketNotFoundException();
+      }
+      foundData.marketType = marketType;
     }
     Object.assign(foundData, dto);
     const data = await this.marketRepository.update(foundData);

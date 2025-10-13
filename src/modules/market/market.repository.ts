@@ -21,6 +21,7 @@ export class MarketRepository implements IMarketRepository {
       .leftJoinAndSelect('marketList.product', 'product')
       .leftJoinAndSelect('marketList.user', 'marketListUser')
       .leftJoinAndSelect('marketList.unit', 'unit')
+      .leftJoinAndSelect('market.marketType', 'marketType')
       .where((qb) => {
         const subQuery = qb
           .subQuery()
@@ -46,6 +47,7 @@ export class MarketRepository implements IMarketRepository {
           user: true,
           unit: true,
         },
+        marketType: true,
       },
       order: {
         marketLists: {

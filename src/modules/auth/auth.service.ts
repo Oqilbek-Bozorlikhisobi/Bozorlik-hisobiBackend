@@ -164,7 +164,7 @@ export class AuthService {
         );
       } catch (error) {
         console.log(error);
-        return { message: 'Sms not sent' };
+        throw new BadRequestException("Sms not send");
       }
     }
 

@@ -24,30 +24,26 @@ export class MarketTypeRepository implements IMarketTypeRepository {
   }> {
     const { search = '', page = 1, limit } = query;
 
-    // 🔍 Qidiruv shartlari (multi-language title bo‘lsa)
-    const where = [
-      { titleEn: ILike(`%${search}%`) },
-      { titleRu: ILike(`%${search}%`) },
-      { titleUz: ILike(`%${search}%`) },
-      { titleUzk: ILike(`%${search}%`) },
-    ];
+    const qb = this.marketTypeRepository
+      .createQueryBuilder('marketType')
+      .leftJoinAndSelect('marketType.markets', 'markets') // ✅ bog‘lanishni ochamiz
+      .orderBy('marketType.createdAt', 'DESC');
 
-    let data: MarketType[];
-    let total: number;
+    if (search) {
+      qb.andWhere(
+        `(marketType.titleEn ILIKE :search 
+        OR marketType.titleRu ILIKE :search 
+        OR marketType.titleUz ILIKE :search 
+        OR marketType.titleUzk ILIKE :search)`,
+        { search: `%${search}%` },
+      );
+    }
 
     if (limit && limit > 0) {
-      [data, total] = await this.marketTypeRepository.findAndCount({
-        where,
-        skip: (page - 1) * limit,
-        take: limit,
-        order: { createdAt: 'DESC' }, // eng yangi turlar birinchi chiqadi
-      });
-    } else {
-      [data, total] = await this.marketTypeRepository.findAndCount({
-        where,
-        order: { createdAt: 'DESC' },
-      });
+      qb.skip((page - 1) * limit).take(limit);
     }
+
+    const [data, total] = await qb.getManyAndCount();
 
     const appliedLimit = limit && limit > 0 ? limit : total;
     const totalPages = appliedLimit > 0 ? Math.ceil(total / appliedLimit) : 1;
@@ -64,7 +60,7 @@ export class MarketTypeRepository implements IMarketTypeRepository {
   async findById(id: string): Promise<MarketType | null> {
     return await this.marketTypeRepository.findOne({
       where: { id },
-      relations: {},
+      relations: { markets: true },
     });
   }
 

@@ -9,6 +9,7 @@ import { HistoryModule } from '../history/history.module';
 import { MarketListModule } from '../market_list/market_list.module';
 import { ProductsModule } from '../products/products.module';
 import { UnitModule } from '../unit/unit.module';
+import { MarketTypeModule } from '../market_type/market_type.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { UnitModule } from '../unit/unit.module';
     forwardRef(() => HistoryModule),
     forwardRef(() => MarketListModule),
     ProductsModule,
-    UnitModule
+    UnitModule,
+    MarketTypeModule
   ],
   controllers: [MarketController],
   providers: [

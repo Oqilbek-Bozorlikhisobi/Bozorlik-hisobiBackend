@@ -22,6 +22,7 @@ import { HistoryModule } from './modules/history/history.module';
 import { FeedbackModule } from './modules/feedback/feedback.module';
 import { UnitModule } from './modules/unit/unit.module';
 import { MarketTypeModule } from './modules/market_type/market_type.module';
+import { NotificationModule } from './modules/notification/notification.module';
 
 @Module({
   imports: [
@@ -70,6 +71,7 @@ import { MarketTypeModule } from './modules/market_type/market_type.module';
     FeedbackModule,
     UnitModule,
     MarketTypeModule,
+    NotificationModule,
   ],
   providers: [JwtStrategy],
 })

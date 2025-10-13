@@ -1,4 +1,12 @@
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity';
 import { User } from '../../user/entities/user.entity';
 import { MarketList } from '../../market_list/entities/market_list.entity';
@@ -14,17 +22,28 @@ export class Market extends BaseEntity {
 
   @ManyToMany(() => User, (user) => user.markets)
   @JoinTable({
-    name: "market_user",
+    name: 'market_user',
     joinColumn: {
-        name: "market_id",
-        referencedColumnName: "id"
+      name: 'market_id',
+      referencedColumnName: 'id',
     },
     inverseJoinColumn: {
-        name: "user_id",
-        referencedColumnName: "id"
+      name: 'user_id',
+      referencedColumnName: 'id',
     },
   })
-  users: User[]
+  users: User[];
+
+  @Column({ type: 'uuid', name: 'market_creator', nullable: true })
+  marketCreator: string;
+
+  @Column({ type: 'simple-json', name: 'pending_users', nullable: true })
+  pendingUsers: {
+    id: string;
+    phoneNumber: string;
+    note?: string;
+    createdAt: Date;
+  }[];
 
   @OneToMany(() => MarketList, (marketList) => marketList.market, {
     cascade: true,
@@ -32,20 +51,26 @@ export class Market extends BaseEntity {
   })
   marketLists: MarketList[];
 
-  @Column({type: 'decimal', precision: 15, scale: 2 ,name: 'total_price', nullable:true, default: 0})
+  @Column({
+    type: 'decimal',
+    precision: 15,
+    scale: 2,
+    name: 'total_price',
+    nullable: true,
+    default: 0,
+  })
   totalPrice: number;
 
-  @Column({type: "varchar", name:"location", nullable:true})
+  @Column({ type: 'varchar', name: 'location', nullable: true })
   location: string;
 
   @ManyToOne(() => MarketType, (marketType) => marketType.markets, {
-    onDelete: "SET NULL",
-    nullable:true
+    onDelete: 'SET NULL',
+    nullable: true,
   })
   @JoinColumn({ name: 'market_type_id' })
   marketType: MarketType;
 
-
-  @Column({type:"boolean", name:"is_current", default:false})
+  @Column({ type: 'boolean', name: 'is_current', default: false })
   isCurrent: boolean;
 }
