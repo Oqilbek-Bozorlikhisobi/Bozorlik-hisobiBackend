@@ -99,8 +99,8 @@ export class MarketService implements IMarketService {
     return new ResData<Market>('Market created successfully', 201, data);
   }
 
-  async findAll(id: string): Promise<ResData<Array<Market>>> {
-    const data = await this.marketRepository.findAll(id);
+  async findAll(id: string, marketTypeId?: string): Promise<ResData<Array<Market>>> {
+    const data = await this.marketRepository.findAll(id, marketTypeId);
 
     const calculated = await Promise.all(
       data.map((market) => this.calculateMarket(market)),

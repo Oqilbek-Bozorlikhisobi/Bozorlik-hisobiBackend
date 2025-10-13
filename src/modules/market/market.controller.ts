@@ -4,7 +4,6 @@ import { CreateMarketDto } from './dto/create-market.dto';
 import { UpdateMarketDto } from './dto/update-market.dto';
 import { IMarketService } from './interfaces/market.service';
 import { AddUserDto } from './dto/add-user.dto';
-import { GetMarketByUserIdDto } from './dto/get-market-by-user-id.dto';
 import { ApiQuery } from '@nestjs/swagger';
 import { CreateMarketByHistoryIdDto } from './dto/create-market-by-historyid.dto';
 import { Auth } from '../../common/decorator/auth.decorator';
@@ -32,9 +31,15 @@ export class MarketController {
 
   @Auth(RoleEnum.USER)
   @Get()
-  findAll(@Req() req: Request) {
+  @ApiQuery({
+    name: 'marketTypeId',
+    required: false,
+    type: String,
+    description: 'Filtrlash uchun MarketType ID (ixtiyoriy)',
+  })
+  findAll(@Req() req: Request, @Query('marketTypeId') marketTypeId?: string) {
     const payload: any = req?.user;
-    return this.marketService.findAll(payload?.id);
+    return this.marketService.findAll(payload?.id, marketTypeId);
   }
 
   @Auth(RoleEnum.USER)

@@ -12,9 +12,9 @@ export class MarketRepository implements IMarketRepository {
   async create(entity: Market): Promise<Market> {
     return await this.marketRepository.save(entity);
   }
-
-  async findAll(userId: string): Promise<Market[]> {
-    return await this.marketRepository
+  
+  async findAll(userId: string, marketTypeId?: string): Promise<Market[]> {
+    const qb = this.marketRepository
       .createQueryBuilder('market')
       .leftJoinAndSelect('market.users', 'user')
       .leftJoinAndSelect('market.marketLists', 'marketList')
@@ -33,8 +33,13 @@ export class MarketRepository implements IMarketRepository {
         return `EXISTS ${subQuery}`;
       })
       .setParameter('userId', userId)
-      .orderBy('marketList.createdAt', 'ASC')
-      .getMany();
+      .orderBy('marketList.createdAt', 'ASC');
+
+    if (marketTypeId) {
+      qb.andWhere('market.marketType.id = :marketTypeId', { marketTypeId });
+    }
+
+    return await qb.getMany();
   }
 
   async findById(id: string): Promise<Market | null> {
