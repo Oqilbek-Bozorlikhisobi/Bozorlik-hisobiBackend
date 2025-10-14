@@ -16,6 +16,9 @@ export class MarketType extends BaseEntity {
   @Column({ type: 'varchar', name: 'title_uzk', nullable: true })
   titleUzk: string;
 
+  @Column({ type: 'varchar', name: 'image', nullable: true })
+  image: string;
+
   @OneToMany(() => Market, (market) => market.marketType)
   markets: Market[];
 }

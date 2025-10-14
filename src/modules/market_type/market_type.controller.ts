@@ -8,13 +8,16 @@ import {
   Delete,
   Inject,
   Query,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { MarketTypeService } from './market_type.service';
 import { CreateMarketTypeDto } from './dto/create-market_type.dto';
 import { UpdateMarketTypeDto } from './dto/update-market_type.dto';
 import { IMarketTypeService } from './interfaces/market_type.service';
-import { ApiQuery } from '@nestjs/swagger';
+import { ApiConsumes, ApiQuery } from '@nestjs/swagger';
 import { QuerySearchDto } from './dto/query-search.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('market-type')
 export class MarketTypeController {
@@ -23,9 +26,14 @@ export class MarketTypeController {
     private readonly marketTypeService: IMarketTypeService,
   ) {}
 
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('file'))
   @Post()
-  create(@Body() createMarketTypeDto: CreateMarketTypeDto) {
-    return this.marketTypeService.create(createMarketTypeDto);
+  create(
+    @Body() createMarketTypeDto: CreateMarketTypeDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.marketTypeService.create(createMarketTypeDto, file);
   }
 
   @Get()
@@ -41,12 +49,15 @@ export class MarketTypeController {
     return this.marketTypeService.findOneById(id);
   }
 
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('file'))
   @Patch(':id')
   update(
     @Param('id') id: string,
     @Body() updateMarketTypeDto: UpdateMarketTypeDto,
+    @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.marketTypeService.update(id, updateMarketTypeDto);
+    return this.marketTypeService.update(id, updateMarketTypeDto, file);
   }
 
   @Delete(':id')

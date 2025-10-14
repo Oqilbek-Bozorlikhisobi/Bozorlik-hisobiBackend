@@ -5,7 +5,10 @@ import { UpdateMarketTypeDto } from '../dto/update-market_type.dto';
 import { MarketType } from '../entities/market_type.entity';
 
 export interface IMarketTypeService {
-  create(dto: CreateMarketTypeDto): Promise<ResData<MarketType>>;
+  create(
+    dto: CreateMarketTypeDto,
+    file: Express.Multer.File,
+  ): Promise<ResData<MarketType>>;
   findAll(query: QuerySearchDto): Promise<
     ResData<{
       items: MarketType[];
@@ -16,6 +19,10 @@ export interface IMarketTypeService {
     }>
   >;
   findOneById(id: string): Promise<ResData<MarketType>>;
-  update(id: string, dto: UpdateMarketTypeDto): Promise<ResData<MarketType>>;
+  update(
+    id: string,
+    dto: UpdateMarketTypeDto,
+    file: Express.Multer.File,
+  ): Promise<ResData<MarketType>>;
   delete(id: string): Promise<ResData<MarketType>>;
 }
