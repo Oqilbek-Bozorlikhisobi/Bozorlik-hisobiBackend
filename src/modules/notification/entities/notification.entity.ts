@@ -35,6 +35,12 @@ export class Notification extends BaseEntity {
   @Column({ type: 'boolean', name: 'is_global', default: false })
   isGlobal: boolean;
 
+  @Column({ type: 'boolean', name: 'is_sent', default: false })
+  isSent: boolean; // Admin global qilgach, userlarga yuborilganligini belgilaydi
+
+  @Column({ type: 'timestamp', name: 'sent_at', nullable: true })
+  sentAt: Date | null; // qachon yuborilgani
+
   // Marketga bog‘liq notification (taklif uchun)
   @ManyToOne(() => Market, { nullable: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'market_id' })

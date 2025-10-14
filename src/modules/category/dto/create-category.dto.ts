@@ -33,6 +33,7 @@ export class CreateCategoryDto {
   @ApiProperty({
     description: 'Category id podcategory uchun',
     example: '6709f52b-0bd8-4e1c-bf94-3045d8346970',
+    required: false
   })
   @IsOptional()
   @IsUUID()
