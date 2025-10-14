@@ -32,6 +32,34 @@ export class CreateProductDto {
   titleUzk: string;
 
   @ApiProperty({
+    description: 'Product desc in English',
+    example: 'New invitation to product',
+  })
+  @IsString()
+  descriptionEn: string;
+
+  @ApiProperty({
+    description: 'Product desc in Russian',
+    example: 'Новое приглашение в продукт',
+  })
+  @IsString()
+  descriptionRu: string;
+
+  @ApiProperty({
+    description: 'Product desc in Uzbek (Latin)',
+    example: 'Marketga yangi taklif',
+  })
+  @IsString()
+  descriptionUz: string;
+
+  @ApiProperty({
+    description: 'Product desc in Uzbek (Cyrillic)',
+    example: 'Маркетга янги таклиф',
+  })
+  @IsString()
+  descriptionUzk: string;
+
+  @ApiProperty({
     description: 'Category unique id (UUID)',
     example: '550e8400-e29b-41d4-a716-446655440000',
   })
