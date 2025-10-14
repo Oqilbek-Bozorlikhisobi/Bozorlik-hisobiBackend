@@ -7,7 +7,7 @@ export interface INotificationRepository {
     data: Notification[];
     total: number;
     page: number;
-    limit: number;
+    limit: number | null;
     totalPages: number;
   }>;
   update(entity: Notification): Promise<Notification>;

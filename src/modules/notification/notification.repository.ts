@@ -22,7 +22,7 @@ export class NotificationRepository implements INotificationRepository {
     limit: number;
     totalPages: number;
   }> {
-    const { page = 1, limit = 10 } = query;
+    const { page = 1, limit } = query;
 
     const qb = this.notificationRepository
       .createQueryBuilder('notification')
@@ -42,17 +42,26 @@ export class NotificationRepository implements INotificationRepository {
      * }
      */
 
-    const [data, total] = await qb
-      .skip((page - 1) * limit)
-      .take(limit)
-      .getManyAndCount();
+    let data: Notification[];
+    let total: number;
+
+    if (limit) {
+      [data, total] = await qb
+        .skip((page - 1) * limit)
+        .take(limit)
+        .getManyAndCount();
+    } else {
+      [data, total] = await qb.getManyAndCount();
+    }
+
+    const appliedLimit = limit ?? total;
 
     return {
       data,
       total,
       page,
-      limit,
-      totalPages: Math.ceil(total / limit),
+      limit: appliedLimit,
+      totalPages: limit ? Math.ceil(total / limit) : 1,
     };
   }
 
