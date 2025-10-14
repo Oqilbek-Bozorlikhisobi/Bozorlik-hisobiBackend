@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginAdminDto } from './dto/login-admin.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -84,10 +84,13 @@ export class AuthController {
   }
 
   @Post('sendotp/again/for-register')
+  @ApiOperation({
+    summary:
+      'OTP kodini qayta yuborish (ro‘yxatdan o‘tish yoki parolni tiklash uchun)',
+  })
   sendOtpAgainForRegister(@Body() data: SendOtpAgainForRegisterDto) {
     return this.authService.sendOtpAgainForRegister(data);
   }
-
 
   @Patch('forget/password/verify-otp')
   verifyOtpForForgetPassword(@Body() data: VerifyOtpDto) {

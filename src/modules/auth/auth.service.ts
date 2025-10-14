@@ -39,7 +39,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 const DEFAULT_PHONE = '+998907894561';
 const DEFAULT_OTP = '7777';
-const DEFAULT_PASSWORD = "qwerty12345"
+const DEFAULT_PASSWORD = 'qwerty12345';
 
 @Injectable()
 export class AuthService {
@@ -164,7 +164,7 @@ export class AuthService {
         );
       } catch (error) {
         console.log(error);
-        throw new BadRequestException("Sms not send");
+        throw new BadRequestException('Sms not send');
       }
     }
 
@@ -290,12 +290,15 @@ export class AuthService {
 
     const encodeData = await encode(JSON.stringify(details));
 
+    let smsText = '';
+    if (details.userData) {
+      smsText = 'MARKET APP ilovasida ro‘yxatdan o‘tish uchun tasdiqlash kodi:';
+    } else if (details.newPassword) {
+      smsText = 'MARKET APP ilovasining parolini tiklash uchun kod:';
+    }
+
     try {
-      await this.smsService.sendSms(
-        data.phoneNumber,
-        String(OTP),
-        'MARKET APP ilovasida ro‘yxatdan o‘tish uchun tasdiqlash kodi:',
-      );
+      await this.smsService.sendSms(data.phoneNumber, String(OTP), smsText);
     } catch (error) {
       console.log(error);
       throw new SmsNotSendedExeption();
@@ -363,10 +366,10 @@ export class AuthService {
         const newUser = await this.userService.create({
           phoneNumber: DEFAULT_PHONE,
           password: DEFAULT_PASSWORD,
-          confirmPassword: DEFAULT_PASSWORD, 
+          confirmPassword: DEFAULT_PASSWORD,
           fullName: 'Default Test User',
-          region: 'Tashkent', 
-          gender: 'male', 
+          region: 'Tashkent',
+          gender: 'male',
         });
 
         if (!newUser || !newUser.data) {
