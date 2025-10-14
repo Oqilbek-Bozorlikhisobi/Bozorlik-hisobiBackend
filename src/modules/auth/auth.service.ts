@@ -291,10 +291,10 @@ export class AuthService {
     const encodeData = await encode(JSON.stringify(details));
 
     let smsText = '';
-    if (details.userData) {
-      smsText = 'MARKET APP ilovasida ro‘yxatdan o‘tish uchun tasdiqlash kodi:';
-    } else if (details.newPassword) {
+    if (details.newPassword) {
       smsText = 'MARKET APP ilovasining parolini tiklash uchun kod:';
+    } else {
+      smsText = 'MARKET APP ilovasida ro‘yxatdan o‘tish uchun tasdiqlash kodi:';
     }
 
     try {
