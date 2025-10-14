@@ -1,7 +1,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { ICategoryRepository } from './interfaces/category.repository';
 import { Category } from './entities/category.entity';
-import { ILike, Repository } from 'typeorm';
+import { ILike, IsNull, Repository } from 'typeorm';
 import { QuerySearchDto } from './dto/query-search.dto';
 
 export class CategoryRepository implements ICategoryRepository {
@@ -24,7 +24,7 @@ export class CategoryRepository implements ICategoryRepository {
   }> {
     const { search = '', page = 1, limit, parentId } = query;
 
-    // Asosiy qidiruv shartlari
+    // Qidiruv shartlari
     const where = [
       { titleEn: ILike(`%${search}%`) },
       { titleRu: ILike(`%${search}%`) },
@@ -32,20 +32,19 @@ export class CategoryRepository implements ICategoryRepository {
       { titleUzk: ILike(`%${search}%`) },
     ];
 
-    // 🔍 parentId bo‘yicha filterlash
     let finalWhere: any[];
 
     if (parentId && parentId !== 'null' && parentId !== 'undefined') {
-      // Subkategoriyalarni olish
+      // Faqat ma’lum parentning childlarini olish
       finalWhere = where.map((cond) => ({
         ...cond,
         parent: { id: parentId },
       }));
     } else {
-      // Root kategoriyalarni olish (parent = null)
+      // Faqat root kategoriyalar (parent = null)
       finalWhere = where.map((cond) => ({
         ...cond,
-        parent: null,
+        parent: IsNull(),
       }));
     }
 
@@ -55,7 +54,7 @@ export class CategoryRepository implements ICategoryRepository {
     if (limit && limit > 0) {
       [data, total] = await this.categoryRepository.findAndCount({
         where: finalWhere,
-        relations: ['parent', 'children'],
+        relations: { children: { parent: true } }, // faqat children yuklanadi
         skip: (page - 1) * limit,
         take: limit,
         order: { createdAt: 'DESC' },
@@ -63,10 +62,16 @@ export class CategoryRepository implements ICategoryRepository {
     } else {
       [data, total] = await this.categoryRepository.findAndCount({
         where: finalWhere,
-        relations: ['parent', 'children'],
+        relations: { children: { parent: true } },
         order: { createdAt: 'DESC' },
       });
     }
+
+    // ✅ Root kategoriyalardagi parent maydonini olib tashlash
+    data = data.map((item) => {
+      const { parent, ...rest } = item;
+      return rest as Category;
+    });
 
     const appliedLimit = limit && limit > 0 ? limit : total;
     const totalPages = appliedLimit > 0 ? Math.ceil(total / appliedLimit) : 1;
