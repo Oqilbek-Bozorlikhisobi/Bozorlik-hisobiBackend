@@ -3,7 +3,15 @@ import { Notification } from '../entities/notification.entity';
 
 export interface INotificationRepository {
   create(dto: Notification): Promise<Notification>;
-  findAll(query: QuerySearchDto): Promise<{
+  createMany(entities: Notification[]): Promise<Notification[]>;
+  findAllForAdmin(query: QuerySearchDto): Promise<{
+    data: Notification[];
+    total: number;
+    page: number;
+    limit: number | null;
+    totalPages: number;
+  }>;
+  findAllForUser(userId:string, query: QuerySearchDto): Promise<{
     data: Notification[];
     total: number;
     page: number;

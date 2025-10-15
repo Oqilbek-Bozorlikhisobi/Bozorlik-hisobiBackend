@@ -1,6 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity';
 import { Market } from '../../market/entities/market.entity';
+import { User } from '../../user/entities/user.entity';
 
 @Entity('notification')
 export class Notification extends BaseEntity {
@@ -38,21 +39,18 @@ export class Notification extends BaseEntity {
   @Column({ type: 'boolean', name: 'is_sent', default: false })
   isSent: boolean; // Admin global qilgach, userlarga yuborilganligini belgilaydi
 
-  @Column({ type: 'timestamp', name: 'sent_at', nullable: true })
-  sentAt: Date | null; // qachon yuborilgani
-
   // Marketga bog‘liq notification (taklif uchun)
   @ManyToOne(() => Market, { nullable: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'market_id' })
   market: Market;
 
-  //   // Kimga yuborilgan
-  //   @ManyToOne(() => User, { nullable: false })
-  //   @JoinColumn({ name: 'receiver_id' })
-  //   receiver: User;
+  // Kimga yuborilgan
+  @ManyToOne(() => User, { nullable: true })
+  @JoinColumn({ name: 'receiver_id' })
+  receiver: User;
 
-  //   // Taklif qilgan odam
-  //   @ManyToOne(() => User, { nullable: true })
-  //   @JoinColumn({ name: 'sender_id' })
-  //   sender: User;
+  // Taklif qilgan odam
+  @ManyToOne(() => User, { nullable: true })
+  @JoinColumn({ name: 'sender_id' })
+  sender: User;
 }

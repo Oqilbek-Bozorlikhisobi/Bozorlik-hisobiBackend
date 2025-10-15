@@ -15,7 +15,11 @@ export class NotificationRepository implements INotificationRepository {
     return newNotification;
   }
 
-  async findAll(query: QuerySearchDto): Promise<{
+  async createMany(entities: Notification[]): Promise<Notification[]> {
+    return await this.notificationRepository.save(entities);
+  }
+
+  async findAllForAdmin(query: QuerySearchDto): Promise<{
     data: Notification[];
     total: number;
     page: number;
@@ -26,21 +30,49 @@ export class NotificationRepository implements INotificationRepository {
 
     const qb = this.notificationRepository
       .createQueryBuilder('notification')
-      //   .leftJoinAndSelect('notification.market', 'market')
-      //   .leftJoinAndSelect('notification.receiver', 'receiver')
-      //   .leftJoinAndSelect('notification.sender', 'sender')
+      .where('notification.isSent = false')
       .orderBy('notification.createdAt', 'DESC');
 
-    /**
-     * 🔸 Keyinchalik shu joyda receiverId bo‘yicha filter qo‘shiladi:
-     *
-     * if (receiverId) {
-     *   qb.andWhere(
-     *     '(notification.isGlobal = true OR notification.receiver_id = :receiverId)',
-     *     { receiverId },
-     *   );
-     * }
-     */
+    let data: Notification[];
+    let total: number;
+
+    if (limit) {
+      [data, total] = await qb
+        .skip((page - 1) * limit)
+        .take(limit)
+        .getManyAndCount();
+    } else {
+      [data, total] = await qb.getManyAndCount();
+    }
+
+    const appliedLimit = limit ?? total;
+
+    return {
+      data,
+      total,
+      page,
+      limit: appliedLimit,
+      totalPages: limit ? Math.ceil(total / limit) : 1,
+    };
+  }
+
+  async findAllForUser(
+    userId: string,
+    query: QuerySearchDto,
+  ): Promise<{
+    data: Notification[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
+    const { page = 1, limit } = query;
+
+    const qb = this.notificationRepository
+      .createQueryBuilder('notification')
+      .leftJoinAndSelect('notification.market', 'market')
+      .where('notification.receiver.id = :userId', { userId })
+      .orderBy('notification.createdAt', 'DESC');
 
     let data: Notification[];
     let total: number;
