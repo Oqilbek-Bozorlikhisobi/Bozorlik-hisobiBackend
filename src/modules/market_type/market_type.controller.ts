@@ -18,6 +18,8 @@ import { IMarketTypeService } from './interfaces/market_type.service';
 import { ApiConsumes, ApiQuery } from '@nestjs/swagger';
 import { QuerySearchDto } from './dto/query-search.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Auth } from '../../common/decorator/auth.decorator';
+import { RoleEnum } from '../../common/enums/enum';
 
 @Controller('market-type')
 export class MarketTypeController {
@@ -26,6 +28,7 @@ export class MarketTypeController {
     private readonly marketTypeService: IMarketTypeService,
   ) {}
 
+  @Auth(RoleEnum.ADMIN)
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('file'))
   @Post()
@@ -49,6 +52,7 @@ export class MarketTypeController {
     return this.marketTypeService.findOneById(id);
   }
 
+  @Auth(RoleEnum.ADMIN)
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('file'))
   @Patch(':id')
@@ -60,6 +64,7 @@ export class MarketTypeController {
     return this.marketTypeService.update(id, updateMarketTypeDto, file);
   }
 
+  @Auth(RoleEnum.ADMIN)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.marketTypeService.delete(id);
