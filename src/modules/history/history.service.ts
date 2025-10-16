@@ -31,6 +31,7 @@ export class HistoryService implements IHistoryService {
     newHistory.name = market.name
     newHistory.marketLists = market.marketLists
     newHistory.users = market.users
+    newHistory.marketType = market.marketType
     newHistory.totalPrice = market.totalPrice
     newHistory.location = market.location
     const data = await this.historyRepository.create(newHistory)

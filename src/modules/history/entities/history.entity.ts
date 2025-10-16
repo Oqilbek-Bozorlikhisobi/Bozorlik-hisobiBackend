@@ -1,5 +1,5 @@
-import { Column, Entity } from "typeorm";
-import { BaseEntity } from "../../../common/entities/base.entity";
+import { Column, Entity } from 'typeorm';
+import { BaseEntity } from '../../../common/entities/base.entity';
 
 @Entity('histories')
 export class History extends BaseEntity {
@@ -11,10 +11,19 @@ export class History extends BaseEntity {
 
   @Column({ type: 'jsonb', name: 'market_lists' })
   marketLists: any;
-  
-  @Column({type: 'decimal', precision: 15, scale: 2, default: 0, name: 'total_price'})
-  totalPrice : number
 
-  @Column({type: "varchar", name:"location", nullable:true})
+  @Column({ type: 'jsonb', name: 'market_type', nullable: true })
+  marketType: any;
+
+  @Column({
+    type: 'decimal',
+    precision: 15,
+    scale: 2,
+    default: 0,
+    name: 'total_price',
+  })
+  totalPrice: number;
+
+  @Column({ type: 'varchar', name: 'location', nullable: true })
   location: string;
 }

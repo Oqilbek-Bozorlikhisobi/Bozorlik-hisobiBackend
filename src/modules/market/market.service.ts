@@ -255,7 +255,10 @@ export class MarketService implements IMarketService {
     }
     const newMarket = new Market();
     newMarket.name = history.name;
+    newMarket.marketCreator = checkUser.id
     newMarket.users = [checkUser];
+    newMarket.marketType = history.marketType;
+
     const data = await this.marketRepository.create(newMarket);
 
     if (history.marketLists && Array.isArray(history.marketLists)) {
