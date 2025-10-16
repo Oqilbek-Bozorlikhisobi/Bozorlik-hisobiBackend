@@ -10,7 +10,7 @@ export class NotificationRepository implements INotificationRepository {
     private readonly notificationRepository: Repository<Notification>,
   ) {}
 
-  async create(dto: Notification): Promise<Notification> {
+  async create(dto: Partial<Notification>): Promise<Notification> {
     const newNotification = await this.notificationRepository.save(dto);
     return newNotification;
   }
@@ -71,6 +71,8 @@ export class NotificationRepository implements INotificationRepository {
     const qb = this.notificationRepository
       .createQueryBuilder('notification')
       .leftJoinAndSelect('notification.market', 'market')
+      .leftJoinAndSelect('notification.receiver', 'receiver')
+      .leftJoinAndSelect('notification.sender', 'sender')
       .where('notification.receiver.id = :userId', { userId })
       .orderBy('notification.createdAt', 'DESC');
 

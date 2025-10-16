@@ -10,7 +10,10 @@ import {
   UserAlreadyExists,
   UserNotFound,
 } from '../user/exeptions/user.esxeption';
-import { MarketNotFoundException } from './exeptions/market.exeption';
+import {
+  MarketNotFoundException,
+  OfferNotFoundException,
+} from './exeptions/market.exeption';
 import { AddUserDto } from './dto/add-user.dto';
 import { GetMarketByUserIdDto } from './dto/get-market-by-user-id.dto';
 import { IHistoryRepository } from '../history/interfaces/history.repository';
@@ -23,6 +26,7 @@ import { IUnitRepository } from '../unit/interfaces/unit.reposotory';
 import { IMarketTypeRepository } from '../market_type/interfaces/market_type.repository';
 import { INotificationRepository } from '../notification/interfaces/notification.repository';
 import { MarketTypeNotFoundExeption } from '../market_type/exeptions/market_type.exeption';
+import { RespondToInviteDto } from './dto/respond-to-invite.dto';
 
 @Injectable()
 export class MarketService implements IMarketService {
@@ -148,7 +152,7 @@ export class MarketService implements IMarketService {
     return new ResData<Market>('ok', 200, data);
   }
 
-  async addUser(addUserDto: AddUserDto): Promise<ResData<Market>> {
+  async sendMarketInvitation(addUserDto: AddUserDto): Promise<ResData<Market>> {
     const user = await this.userRepository.findByPhoneNumber(
       addUserDto.phoneNumber,
     );
@@ -160,17 +164,14 @@ export class MarketService implements IMarketService {
       throw new MarketNotFoundException();
     }
 
-    const alreadyExists = market.users.some((u) => u.id === user.id);
-    if (alreadyExists) {
-      throw new UserAlreadyExists();
-    }
+    const alreadyExists = market.users?.some((u) => u.id === user.id) ?? false;
+    if (alreadyExists) throw new UserAlreadyExists();
 
-    const userAlreadyPending = market.pendingUsers.some(
-      (u) => u.id === user.id,
-    );
+    const userAlreadyPending =
+      market.pendingUsers?.some((u) => u.id === user.id) ?? false;
     if (userAlreadyPending) {
       return new ResData<Market>(
-        'User already pending for this market',
+        'User already invited to this market',
         200,
         market,
       );
@@ -187,7 +188,49 @@ export class MarketService implements IMarketService {
     market.pendingUsers.push(pendingUser);
 
     const data = await this.marketRepository.update(market);
+
+    const creator = await this.userRepository.findOneById(market.marketCreator);
+
+    await this.notificationRepository.create({
+      isSent: true,
+      sender: creator,
+      market: market,
+      receiver: user,
+      isRead: false,
+      note: addUserDto.note,
+      isGlobal: false,
+    });
+
     return new ResData<Market>('ok', 200, data);
+  }
+
+  async respondToInvite(
+    userId: string,
+    dto: RespondToInviteDto,
+  ): Promise<ResData<Market>> {
+    const market = await this.marketRepository.findById(dto.marketId);
+    if (!market) {
+      throw new MarketNotFoundException();
+    }
+    const pending = market.pendingUsers || [];
+    const target = pending.find((u) => u.id === userId);
+    if (!target) throw new OfferNotFoundException();
+
+    if (dto.accept) {
+      const user = await this.userRepository.findOneById(userId);
+      if (!user) {
+        throw new UserNotFound();
+      }
+      market.users.push(user);
+    }
+
+    market.pendingUsers = pending.filter((u) => u.id !== userId);
+    await this.marketRepository.update(market);
+    return new ResData(
+      `Taklif ${dto.accept ? 'qabul qilindi' : 'rad etildi'}`,
+      200,
+      market,
+    );
   }
 
   async delete(id: string): Promise<ResData<Market>> {

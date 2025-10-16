@@ -2,7 +2,7 @@ import { QuerySearchDto } from '../dto/query-search.dto';
 import { Notification } from '../entities/notification.entity';
 
 export interface INotificationRepository {
-  create(dto: Notification): Promise<Notification>;
+  create(dto: Partial<Notification>): Promise<Notification>;
   createMany(entities: Notification[]): Promise<Notification[]>;
   findAllForAdmin(query: QuerySearchDto): Promise<{
     data: Notification[];
@@ -11,7 +11,10 @@ export interface INotificationRepository {
     limit: number | null;
     totalPages: number;
   }>;
-  findAllForUser(userId:string, query: QuerySearchDto): Promise<{
+  findAllForUser(
+    userId: string,
+    query: QuerySearchDto,
+  ): Promise<{
     data: Notification[];
     total: number;
     page: number;

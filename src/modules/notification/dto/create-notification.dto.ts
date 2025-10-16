@@ -7,54 +7,54 @@ export class CreateNotificationDto {
     example: 'New invitation to market',
   })
   @IsString()
-  titleEn: string;
+  titleEn?: string;
 
   @ApiProperty({
     description: 'Notification title in Russian',
     example: 'Новое приглашение в маркет',
   })
   @IsString()
-  titleRu: string;
+  titleRu?: string;
 
   @ApiProperty({
     description: 'Notification title in Uzbek (Latin)',
     example: 'Marketga yangi taklif',
   })
   @IsString()
-  titleUz: string;
+  titleUz?: string;
 
   @ApiProperty({
     description: 'Notification title in Uzbek (Cyrillic)',
     example: 'Маркетга янги таклиф',
   })
   @IsString()
-  titleUzk: string;
+  titleUzk?: string;
 
   @ApiProperty({
     description: 'Notification message in English',
     example: 'You have been invited to join the market "SuperMart".',
   })
   @IsString()
-  messageEn: string;
+  messageEn?: string;
 
   @ApiProperty({
     description: 'Notification message in Russian',
     example: 'Вас пригласили присоединиться к маркету "SuperMart".',
   })
   @IsString()
-  messageRu: string;
+  messageRu?: string;
 
   @ApiProperty({
     description: 'Notification message in Uzbek (Latin)',
     example: 'Sizni "SuperMart" marketiga taklif qilishdi.',
   })
   @IsString()
-  messageUz: string;
+  messageUz?: string;
 
   @ApiProperty({
     description: 'Notification message in Uzbek (Cyrillic)',
     example: 'Сизни "SuperMart" маркетига таклиф қилишди.',
   })
   @IsString()
-  messageUzk: string;
+  messageUzk?: string;
 }

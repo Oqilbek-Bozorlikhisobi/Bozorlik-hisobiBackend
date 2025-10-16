@@ -10,6 +10,7 @@ import { Auth } from '../../common/decorator/auth.decorator';
 import { RoleEnum } from '../../common/enums/enum';
 import { SelfGuard } from '../shared/guards/self.guard';
 import { Request } from 'express';
+import { RespondToInviteDto } from './dto/respond-to-invite.dto';
 
 @Controller('market')
 export class MarketController {
@@ -68,9 +69,19 @@ export class MarketController {
   }
 
   @Auth(RoleEnum.USER)
-  @Patch('add/user')
-  addUser(@Body() addUserDto: AddUserDto) {
-    return this.marketService.addUser(addUserDto);
+  @Patch('send/invitation')
+  sendMarketInvitation(@Body() addUserDto: AddUserDto) {
+    return this.marketService.sendMarketInvitation(addUserDto);
+  }
+
+  @Auth(RoleEnum.USER)
+  @Patch('respond/to-invite')
+  respondToInvite(
+    @Req() req: Request,
+    @Body() dto: RespondToInviteDto,
+  ) {
+    const payload: any = req?.user;
+    return this.marketService.respondToInvite(payload?.id, dto);
   }
 
   @Auth(RoleEnum.USER)

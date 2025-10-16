@@ -5,28 +5,28 @@ import { User } from '../../user/entities/user.entity';
 
 @Entity('notification')
 export class Notification extends BaseEntity {
-  @Column({ type: 'varchar', name: 'title_en' })
+  @Column({ type: 'varchar', name: 'title_en', nullable: true })
   titleEn: string;
 
-  @Column({ type: 'varchar', name: 'title_ru' })
+  @Column({ type: 'varchar', name: 'title_ru', nullable: true })
   titleRu: string;
 
-  @Column({ type: 'varchar', name: 'title_uz' })
+  @Column({ type: 'varchar', name: 'title_uz', nullable: true })
   titleUz: string;
 
-  @Column({ type: 'varchar', name: 'title_uzk' })
+  @Column({ type: 'varchar', name: 'title_uzk', nullable: true })
   titleUzk: string;
 
-  @Column({ type: 'varchar', name: 'message_en' })
+  @Column({ type: 'varchar', name: 'message_en', nullable: true })
   messageEn: string;
 
-  @Column({ type: 'varchar', name: 'message_ru' })
+  @Column({ type: 'varchar', name: 'message_ru', nullable: true })
   messageRu: string;
 
-  @Column({ type: 'varchar', name: 'message_uz' })
+  @Column({ type: 'varchar', name: 'message_uz', nullable: true })
   messageUz: string;
 
-  @Column({ type: 'varchar', name: 'message_uzk' })
+  @Column({ type: 'varchar', name: 'message_uzk', nullable: true })
   messageUzk: string;
 
   @Column({ type: 'boolean', name: 'is_read', default: false })
@@ -38,6 +38,9 @@ export class Notification extends BaseEntity {
 
   @Column({ type: 'boolean', name: 'is_sent', default: false })
   isSent: boolean; // Admin global qilgach, userlarga yuborilganligini belgilaydi
+
+  @Column({ type: 'varchar', name: 'note', nullable: true })
+  note?: string;
 
   // Marketga bog‘liq notification (taklif uchun)
   @ManyToOne(() => Market, { nullable: true, onDelete: 'CASCADE' })
@@ -52,5 +55,5 @@ export class Notification extends BaseEntity {
   // Taklif qilgan odam
   @ManyToOne(() => User, { nullable: true })
   @JoinColumn({ name: 'sender_id' })
-  sender: User;
+  sender?: User | null;
 }
