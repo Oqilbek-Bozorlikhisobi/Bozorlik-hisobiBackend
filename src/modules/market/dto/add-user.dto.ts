@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsUUID, Matches } from 'class-validator';
+import { IsOptional, IsString, IsUUID, Matches } from 'class-validator';
 
 export class AddUserDto {
   @ApiProperty({
@@ -18,4 +18,13 @@ export class AddUserDto {
       message: 'Phone number must start with + and contain only digits',
     })
   phoneNumber:string
+
+  @ApiProperty({
+    description: "Odam jonatiladigon izoh",
+    example: "jigar siz qoshmoqchiman shu dachaga boradigon bozorligimizga",
+    required: false
+  })
+  @IsOptional()
+  @IsString()
+  note?:string
 }

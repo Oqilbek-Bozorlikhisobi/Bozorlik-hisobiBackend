@@ -10,6 +10,7 @@ import { MarketListModule } from '../market_list/market_list.module';
 import { ProductsModule } from '../products/products.module';
 import { UnitModule } from '../unit/unit.module';
 import { MarketTypeModule } from '../market_type/market_type.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { MarketTypeModule } from '../market_type/market_type.module';
     forwardRef(() => MarketListModule),
     ProductsModule,
     UnitModule,
-    MarketTypeModule
+    MarketTypeModule,
+    NotificationModule
   ],
   controllers: [MarketController],
   providers: [

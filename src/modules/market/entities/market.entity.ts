@@ -40,8 +40,8 @@ export class Market extends BaseEntity {
   @Column({ type: 'simple-json', name: 'pending_users', nullable: true })
   pendingUsers: {
     id: string;
+    fullName: string;
     phoneNumber: string;
-    note?: string;
     createdAt: Date;
   }[];
 
