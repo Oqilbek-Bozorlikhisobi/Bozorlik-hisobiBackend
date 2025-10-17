@@ -1,14 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, Query, UseGuards, Res, Req } from '@nestjs/common';
-import { HistoryService } from './history.service';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Inject,
+  Query,
+  Req,
+} from '@nestjs/common';
 import { CreateHistoryDto } from './dto/create-history.dto';
-import { UpdateHistoryDto } from './dto/update-history.dto';
 import { IHistoryService } from './interfaces/history.service';
 import { ApiQuery } from '@nestjs/swagger';
-import { GetHistoryByUserIdDto } from './dto/get-history-by-user-id.dto';
 import { Auth } from '../../common/decorator/auth.decorator';
 import { RoleEnum } from '../../common/enums/enum';
-import { SelfGuard } from '../shared/guards/self.guard';
 import { Request } from 'express';
+import { QuerySearchDto } from './dto/query-search.dto';
 
 @Controller('history')
 export class HistoryController {
@@ -24,20 +31,18 @@ export class HistoryController {
 
   @Auth(RoleEnum.USER)
   @Get()
-  getAllUserHistoriesById(@Req() req: Request) {
-    const payload:any = req?.user
-    return this.historyService.getAllUserHistoriesById(payload.id);
+  @ApiQuery({ name: 'marketTypeId', required: false })
+  @ApiQuery({ name: 'page', required: false })
+  @ApiQuery({ name: 'limit', required: false })
+  getAllUserHistoriesById(@Req() req: Request, @Query() query: QuerySearchDto) {
+    const payload: any = req?.user;
+    return this.historyService.getAllUserHistoriesById(payload.id, query);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.historyService.findOneById(id);
   }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateHistoryDto: UpdateHistoryDto) {
-  //   return this.historyService.update(id, updateHistoryDto);
-  // }
 
   @Auth(RoleEnum.ADMIN, RoleEnum.USER)
   @Delete(':id')
