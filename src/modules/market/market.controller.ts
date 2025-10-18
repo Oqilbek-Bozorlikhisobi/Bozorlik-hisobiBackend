@@ -11,6 +11,7 @@ import { RoleEnum } from '../../common/enums/enum';
 import { SelfGuard } from '../shared/guards/self.guard';
 import { Request } from 'express';
 import { RespondToInviteDto } from './dto/respond-to-invite.dto';
+import { DeletedUserDto } from './dto/deleted-user.dto';
 
 @Controller('market')
 export class MarketController {
@@ -76,12 +77,16 @@ export class MarketController {
 
   @Auth(RoleEnum.USER)
   @Patch('respond/to-invite')
-  respondToInvite(
-    @Req() req: Request,
-    @Body() dto: RespondToInviteDto,
-  ) {
+  respondToInvite(@Req() req: Request, @Body() dto: RespondToInviteDto) {
     const payload: any = req?.user;
     return this.marketService.respondToInvite(payload?.id, dto);
+  }
+
+  @Auth(RoleEnum.USER)
+  @Patch('delete/user')
+  deleteUser(@Req() req: Request, @Body() dto: DeletedUserDto) {
+    const payload: any = req?.user;
+    return this.marketService.deleteUser(payload?.id, dto);
   }
 
   @Auth(RoleEnum.USER)

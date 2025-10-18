@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { CreateMarketDto } from './dto/create-market.dto';
 import { UpdateMarketDto } from './dto/update-market.dto';
 import { IMarketService } from './interfaces/market.service';
@@ -27,6 +27,7 @@ import { IMarketTypeRepository } from '../market_type/interfaces/market_type.rep
 import { INotificationRepository } from '../notification/interfaces/notification.repository';
 import { MarketTypeNotFoundExeption } from '../market_type/exeptions/market_type.exeption';
 import { RespondToInviteDto } from './dto/respond-to-invite.dto';
+import { DeletedUserDto } from './dto/deleted-user.dto';
 
 @Injectable()
 export class MarketService implements IMarketService {
@@ -233,6 +234,31 @@ export class MarketService implements IMarketService {
     );
   }
 
+  async deleteUser(
+    userId: string,
+    dto: DeletedUserDto,
+  ): Promise<ResData<Market>> {
+    const market = await this.marketRepository.findById(dto.marketId);
+    if (!market) {
+      throw new MarketNotFoundException();
+    }
+    if (market.marketCreator !== userId) {
+      throw new ForbiddenException('Ruxsat etilmagan foydalanuvchi');
+    }
+
+    if (dto.deletedUserId === userId) {
+      throw new ForbiddenException('Siz o‘zingizni o‘chira olmaysiz');
+    }
+    
+    const user = await this.userRepository.findOneById(dto.deletedUserId);
+    if (!user) {
+      throw new UserNotFound();
+    }
+    market.users = market.users.filter((u) => u.id !== dto.deletedUserId);
+    await this.marketRepository.update(market);
+    return new ResData('ok', 200, market);
+  }
+
   async delete(id: string): Promise<ResData<Market>> {
     const foundData = await this.marketRepository.findById(id);
     if (!foundData) {
@@ -255,7 +281,7 @@ export class MarketService implements IMarketService {
     }
     const newMarket = new Market();
     newMarket.name = history.name;
-    newMarket.marketCreator = checkUser.id
+    newMarket.marketCreator = checkUser.id;
     newMarket.users = [checkUser];
     newMarket.marketType = history.marketType;
 
