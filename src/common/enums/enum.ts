@@ -9,3 +9,8 @@ export enum FeedbackTypeEnum {
   COMPLAINT = 'complaint',
   BUG = 'bug',
 }
+
+export enum CalculationType {
+  ONE = 'one',
+  ALL = 'all',
+}

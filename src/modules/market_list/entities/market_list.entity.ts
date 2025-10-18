@@ -4,6 +4,7 @@ import { Market } from '../../market/entities/market.entity';
 import { Product } from '../../products/entities/product.entity';
 import { User } from '../../user/entities/user.entity';
 import { Unit } from '../../unit/entities/unit.entity';
+import { CalculationType } from '../../../common/enums/enum';
 
 @Entity('market_list')
 export class MarketList extends BaseEntity {
@@ -48,17 +49,31 @@ export class MarketList extends BaseEntity {
   })
   price: number;
 
+  @Column({
+    type: 'enum',
+    enum: CalculationType,
+    name: 'calculation_type',
+    default: CalculationType.ONE,
+  })
+  calculationType: CalculationType;
+
   @Column({ type: 'boolean', name: 'is_buying', default: false })
   isBuying: boolean;
 
   @Column({ type: 'text', name: 'description', nullable: true })
   description: string;
 
-  @ManyToOne(() => User, (user) => user.marketLists, { nullable: true, onDelete: "SET NULL" })
+  @ManyToOne(() => User, (user) => user.marketLists, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
   @JoinColumn({ name: 'buying_by' })
   user: User;
 
-  @ManyToOne(() => Unit, (unit) => unit.marketLists, { nullable: true, onDelete: "SET NULL" })
+  @ManyToOne(() => Unit, (unit) => unit.marketLists, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
   @JoinColumn({ name: 'unit_id' })
   unit: Unit | null;
 }

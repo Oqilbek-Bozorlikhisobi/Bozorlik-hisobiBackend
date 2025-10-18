@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString, IsUUID } from 'class-validator';
+import { CalculationType } from '../../../common/enums/enum';
 
 export class CheckListDto {
   @ApiProperty({
@@ -9,11 +10,17 @@ export class CheckListDto {
   @IsNumber()
   price: number;
 
-  // @ApiProperty({
-  //   description: 'User unique Id(uuid)',
-  //   example: '550e8400-e29b-41d4-a716-446655440000',
-  // })
   @IsOptional()
   @IsString()
   userId: string;
+
+  @ApiProperty({
+    description: 'Hisoblash turi: all yoki one',
+    enum: CalculationType,
+    example: CalculationType.ONE,
+  })
+  @IsEnum(CalculationType, {
+    message: 'calculationType faqat all yoki one bo‘lishi kerak',
+  })
+  calculationType: CalculationType;
 }

@@ -60,7 +60,12 @@ export class MarketService implements IMarketService {
         .reduce((sum, ml) => {
           const price = Number(ml.price ?? 0);
           const quantity = Number(ml.quantity ?? 1);
-          return sum + price * quantity;
+          if (ml.calculationType === 'one') {
+            return sum + price * quantity; // ONE bo‘lsa price * quantity
+          } else if (ml.calculationType === 'all') {
+            return sum + price; // ALL bo‘lsa faqat price olinadi
+          }
+          return sum;
         }, 0);
 
       (market as any).totalPrice = totalPrice;
@@ -249,7 +254,7 @@ export class MarketService implements IMarketService {
     if (dto.deletedUserId === userId) {
       throw new ForbiddenException('Siz o‘zingizni o‘chira olmaysiz');
     }
-    
+
     const user = await this.userRepository.findOneById(dto.deletedUserId);
     if (!user) {
       throw new UserNotFound();
