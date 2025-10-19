@@ -54,7 +54,7 @@ export class CategoryRepository implements ICategoryRepository {
     if (limit && limit > 0) {
       [data, total] = await this.categoryRepository.findAndCount({
         where: finalWhere,
-        relations: { children: { parent: true } }, // faqat children yuklanadi
+        relations: { children: { parent: true }, products: true }, // faqat children yuklanadi
         skip: (page - 1) * limit,
         take: limit,
         order: { createdAt: 'DESC' },
@@ -62,7 +62,7 @@ export class CategoryRepository implements ICategoryRepository {
     } else {
       [data, total] = await this.categoryRepository.findAndCount({
         where: finalWhere,
-        relations: { children: { parent: true } },
+        relations: { children: { parent: true }, products: true },
         order: { createdAt: 'DESC' },
       });
     }
@@ -88,7 +88,7 @@ export class CategoryRepository implements ICategoryRepository {
   async findById(id: string): Promise<Category | null> {
     return await this.categoryRepository.findOne({
       where: { id },
-      relations: ['parent', 'children'],
+      relations: ['parent', 'children', 'products'],
     });
   }
 
