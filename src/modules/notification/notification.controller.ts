@@ -18,6 +18,7 @@ import { QuerySearchDto } from './dto/query-search.dto';
 import { Auth } from '../../common/decorator/auth.decorator';
 import { RoleEnum } from '../../common/enums/enum';
 import { Request } from 'express';
+import { QuerySearchUserDto } from './dto/query-search-user.dto';
 
 @Controller('notification')
 export class NotificationController {
@@ -44,7 +45,8 @@ export class NotificationController {
   @Get('user')
   @ApiQuery({ name: 'page', required: false })
   @ApiQuery({ name: 'limit', required: false })
-  findAllForUser(@Query() query: QuerySearchDto, @Req() req: Request) {
+  @ApiQuery({ name: 'isRead', required: false, type: Boolean })
+  findAllForUser(@Query() query: QuerySearchUserDto, @Req() req: Request) {
     const payload: any = req?.user;
     const userId = payload?.id;
     return this.notificationService.findAllForUser(userId, query);

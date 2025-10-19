@@ -1,5 +1,6 @@
 import { ResData } from '../../../common/lib/resData';
 import { CreateNotificationDto } from '../dto/create-notification.dto';
+import { QuerySearchUserDto } from '../dto/query-search-user.dto';
 import { QuerySearchDto } from '../dto/query-search.dto';
 import { UpdateNotificationDto } from '../dto/update-notification.dto';
 import { Notification } from '../entities/notification.entity';
@@ -15,7 +16,10 @@ export interface INotificationService {
       totalPages: number;
     }>
   >;
-  findAllForUser(userId:string, query: QuerySearchDto): Promise<
+  findAllForUser(
+    userId: string,
+    query: QuerySearchUserDto,
+  ): Promise<
     ResData<{
       items: Notification[];
       page: number;
@@ -30,7 +34,7 @@ export interface INotificationService {
     dto: UpdateNotificationDto,
   ): Promise<ResData<Notification>>;
   delete(id: string): Promise<ResData<Notification>>;
-  makeGlobal(id:string): Promise<ResData<string>>;
-  clearAllNotifications(userId:string): Promise<ResData<string>>;
-  doAllIsRead(userId:string): Promise<ResData<string>>;
+  makeGlobal(id: string): Promise<ResData<string>>;
+  clearAllNotifications(userId: string): Promise<ResData<string>>;
+  doAllIsRead(userId: string): Promise<ResData<string>>;
 }

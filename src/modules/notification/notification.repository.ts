@@ -3,6 +3,7 @@ import { Notification } from './entities/notification.entity';
 import { INotificationRepository } from './interfaces/notification.repository';
 import { Repository } from 'typeorm';
 import { QuerySearchDto } from './dto/query-search.dto';
+import { QuerySearchUserDto } from './dto/query-search-user.dto';
 
 export class NotificationRepository implements INotificationRepository {
   constructor(
@@ -58,7 +59,7 @@ export class NotificationRepository implements INotificationRepository {
 
   async findAllForUser(
     userId: string,
-    query: QuerySearchDto,
+    query: QuerySearchUserDto,
   ): Promise<{
     data: Notification[];
     total: number;
@@ -66,7 +67,7 @@ export class NotificationRepository implements INotificationRepository {
     limit: number;
     totalPages: number;
   }> {
-    const { page = 1, limit } = query;
+    const { page = 1, limit, isRead } = query;
 
     const qb = this.notificationRepository
       .createQueryBuilder('notification')
@@ -75,6 +76,12 @@ export class NotificationRepository implements INotificationRepository {
       .leftJoinAndSelect('notification.sender', 'sender')
       .where('notification.receiver.id = :userId', { userId })
       .orderBy('notification.createdAt', 'DESC');
+
+    if (isRead !== undefined && isRead !== null && isRead !== '') {
+      qb.andWhere('notification.isRead = :isRead', {
+        isRead: isRead === 'true',
+      });
+    }
 
     let data: Notification[];
     let total: number;

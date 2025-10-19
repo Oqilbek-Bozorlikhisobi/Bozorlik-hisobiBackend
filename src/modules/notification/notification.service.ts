@@ -9,6 +9,7 @@ import { Notification } from './entities/notification.entity';
 import { QuerySearchDto } from './dto/query-search.dto';
 import { NotificationNotFoundException } from './exeptions/notification.exeption';
 import { UserNotFound } from '../user/exeptions/user.esxeption';
+import { QuerySearchUserDto } from './dto/query-search-user.dto';
 
 @Injectable()
 export class NotificationService implements INotificationService {
@@ -47,7 +48,7 @@ export class NotificationService implements INotificationService {
 
   async findAllForUser(
     userId: string,
-    query: QuerySearchDto,
+    query: QuerySearchUserDto,
   ): Promise<
     ResData<{
       items: Notification[];

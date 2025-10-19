@@ -1,3 +1,4 @@
+import { QuerySearchUserDto } from '../dto/query-search-user.dto';
 import { QuerySearchDto } from '../dto/query-search.dto';
 import { Notification } from '../entities/notification.entity';
 
@@ -13,7 +14,7 @@ export interface INotificationRepository {
   }>;
   findAllForUser(
     userId: string,
-    query: QuerySearchDto,
+    query: QuerySearchUserDto,
   ): Promise<{
     data: Notification[];
     total: number;
