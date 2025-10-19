@@ -54,7 +54,10 @@ export class CategoryRepository implements ICategoryRepository {
     if (limit && limit > 0) {
       [data, total] = await this.categoryRepository.findAndCount({
         where: finalWhere,
-        relations: { children: { parent: true }, products: true }, // faqat children yuklanadi
+        relations: {
+          children: { parent: true, products: true },
+          products: true,
+        }, // faqat children yuklanadi
         skip: (page - 1) * limit,
         take: limit,
         order: { createdAt: 'DESC' },
@@ -62,7 +65,10 @@ export class CategoryRepository implements ICategoryRepository {
     } else {
       [data, total] = await this.categoryRepository.findAndCount({
         where: finalWhere,
-        relations: { children: { parent: true }, products: true },
+        relations: {
+          children: { parent: true, products: true },
+          products: true,
+        },
         order: { createdAt: 'DESC' },
       });
     }
