@@ -91,6 +91,7 @@ export class MarketListService implements IMarketListService {
     foundData.isBuying = true;
     foundData.user = checkUser;
     foundData.price = dto.price;
+    foundData.calculationType = dto.calculationType
     const data = await this.marketListRepository.update(foundData);
     return new ResData<MarketList>('ok', 200, data);
   }

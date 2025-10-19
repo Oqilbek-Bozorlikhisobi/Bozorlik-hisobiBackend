@@ -28,6 +28,7 @@ import { INotificationRepository } from '../notification/interfaces/notification
 import { MarketTypeNotFoundExeption } from '../market_type/exeptions/market_type.exeption';
 import { RespondToInviteDto } from './dto/respond-to-invite.dto';
 import { DeletedUserDto } from './dto/deleted-user.dto';
+import { CalculationType } from '../../common/enums/enum';
 
 @Injectable()
 export class MarketService implements IMarketService {
@@ -60,9 +61,9 @@ export class MarketService implements IMarketService {
         .reduce((sum, ml) => {
           const price = Number(ml.price ?? 0);
           const quantity = Number(ml.quantity ?? 1);
-          if (ml.calculationType === 'one') {
+          if (ml.calculationType === CalculationType.ONE) {
             return sum + price * quantity; // ONE bo‘lsa price * quantity
-          } else if (ml.calculationType === 'all') {
+          } else if (ml.calculationType === CalculationType.ALL) {
             return sum + price; // ALL bo‘lsa faqat price olinadi
           }
           return sum;
