@@ -139,18 +139,25 @@ export class HistoryRepository implements IHistoryRepository {
         ? 0
         : ((currentMonthSpent - prevMonthSpent) / prevMonthSpent) * 100;
 
-    // Belgini qo‘lda kiritamiz va stringga o‘tkazamiz
-    const compareToPrevMonth =
-      percentChange > 0
-        ? `+${percentChange.toFixed(1)}`
-        : percentChange.toFixed(1);
+    // Kasr bor yoki yo‘qligini aniqlaymiz
+    let formattedValue: string;
+
+    if (Number.isInteger(percentChange)) {
+      formattedValue =
+        percentChange > 0 ? `+${percentChange}` : `${percentChange}`;
+    } else {
+      formattedValue =
+        percentChange > 0
+          ? `+${percentChange.toFixed(1)}`
+          : percentChange.toFixed(1);
+    }
 
     return {
       totalMarkets: totalCount,
       totalSpent,
       monthlyMarkets: currentMonthCount,
       monthlySpent: currentMonthSpent,
-      compareToPrevMonth,
+      compareToPrevMonth: formattedValue,
     };
   }
 }
