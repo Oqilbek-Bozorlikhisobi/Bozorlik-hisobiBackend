@@ -39,6 +39,13 @@ export class HistoryController {
     return this.historyService.getAllUserHistoriesById(payload.id, query);
   }
 
+  @Auth(RoleEnum.USER)
+  @Get('statistics')
+  getUserStatistics(@Req() req: Request) {
+    const payload: any = req?.user;
+    return this.historyService.getUserStatistics(payload.id);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.historyService.findOneById(id);

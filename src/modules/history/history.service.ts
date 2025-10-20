@@ -73,4 +73,17 @@ export class HistoryService implements IHistoryService {
     await this.historyRepository.delete(foundData);
     return new ResData<History>('ok', 200, foundData);
   }
+
+  async getUserStatistics(userId: string): Promise<
+    ResData<{
+      totalMarkets: number;
+      totalSpent: number;
+      monthlyMarkets: number;
+      monthlySpent: number;
+      compareToPrevMonth: number;
+    }>
+  > {
+    const data = await this.historyRepository.getUserStatistics(userId);
+    return new ResData('ok', 200, data);
+  }
 }

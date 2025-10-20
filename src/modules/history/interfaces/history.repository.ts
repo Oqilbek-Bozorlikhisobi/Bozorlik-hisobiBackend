@@ -16,4 +16,11 @@ export interface IHistoryRepository {
   update(entity: History): Promise<History>;
   delete(entity: History): Promise<History>;
   findById(id: string): Promise<History | null>;
+  getUserStatistics(userId: string): Promise<{
+    totalMarkets: number;
+    totalSpent: number;
+    monthlyMarkets: number;
+    monthlySpent: number;
+    compareToPrevMonth: number;
+  }>;
 }

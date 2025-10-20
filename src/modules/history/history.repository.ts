@@ -69,4 +69,82 @@ export class HistoryRepository implements IHistoryRepository {
   async delete(entity: History): Promise<History> {
     return await this.historyRepository.remove(entity);
   }
+
+  async getUserStatistics(userId: string): Promise<{
+    totalMarkets: number;
+    totalSpent: number;
+    monthlyMarkets: number;
+    monthlySpent: number;
+    compareToPrevMonth: number;
+  }> {
+    const qb = this.historyRepository
+      .createQueryBuilder('history')
+      .where(`history.users @> :user`, {
+        user: JSON.stringify([{ id: userId }]),
+      });
+
+    // Jami
+    const totalCount = await qb.getCount();
+    const totalSpent = await qb
+      .select('SUM(history.totalPrice)', 'sum')
+      .getRawOne()
+      .then((r) => Number(r.sum ?? 0));
+
+    // Oylik
+    const startOfMonth = new Date(
+      new Date().getFullYear(),
+      new Date().getMonth(),
+      1,
+    );
+    const currentMonthHistories = await this.historyRepository
+      .createQueryBuilder('h')
+      .where(`h.users @> :user`, { user: JSON.stringify([{ id: userId }]) })
+      .andWhere(`h.createdAt >= :startOfMonth`, { startOfMonth })
+      .getMany();
+
+    const currentMonthCount = currentMonthHistories.length;
+    const currentMonthSpent = currentMonthHistories.reduce(
+      (sum, h) => sum + Number(h.totalPrice || 0),
+      0,
+    );
+
+    // O‘tgan oy
+    const startOfPrevMonth = new Date(
+      new Date().getFullYear(),
+      new Date().getMonth() - 1,
+      1,
+    );
+    const endOfPrevMonth = new Date(
+      new Date().getFullYear(),
+      new Date().getMonth(),
+      0,
+    );
+
+    const prevMonthHistories = await this.historyRepository
+      .createQueryBuilder('h')
+      .where(`h.users @> :user`, { user: JSON.stringify([{ id: userId }]) })
+      .andWhere(`h.createdAt BETWEEN :start AND :end`, {
+        start: startOfPrevMonth,
+        end: endOfPrevMonth,
+      })
+      .getMany();
+
+    const prevMonthSpent = prevMonthHistories.reduce(
+      (sum, h) => sum + Number(h.totalPrice || 0),
+      0,
+    );
+
+    const percentChange =
+      prevMonthSpent === 0
+        ? 0
+        : ((currentMonthSpent - prevMonthSpent) / prevMonthSpent) * 100;
+
+    return {
+      totalMarkets: totalCount,
+      totalSpent,
+      monthlyMarkets: currentMonthCount,
+      monthlySpent: currentMonthSpent,
+      compareToPrevMonth: +percentChange.toFixed(1),
+    };
+  }
 }

@@ -20,4 +20,13 @@ export interface IHistoryService {
   >;
   findOneById(id: string): Promise<ResData<History>>;
   delete(id: string): Promise<ResData<History>>;
+  getUserStatistics(userId: string): Promise<
+    ResData<{
+      totalMarkets: number;
+      totalSpent: number;
+      monthlyMarkets: number;
+      monthlySpent: number;
+      compareToPrevMonth: number;
+    }>
+  >;
 }
