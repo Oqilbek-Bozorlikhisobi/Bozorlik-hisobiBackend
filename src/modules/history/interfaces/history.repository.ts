@@ -21,6 +21,6 @@ export interface IHistoryRepository {
     totalSpent: number;
     monthlyMarkets: number;
     monthlySpent: number;
-    compareToPrevMonth: number;
+    compareToPrevMonth: string;
   }>;
 }

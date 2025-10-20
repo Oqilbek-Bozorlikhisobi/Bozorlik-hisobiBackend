@@ -80,7 +80,7 @@ export class HistoryService implements IHistoryService {
       totalSpent: number;
       monthlyMarkets: number;
       monthlySpent: number;
-      compareToPrevMonth: number;
+      compareToPrevMonth: string;
     }>
   > {
     const data = await this.historyRepository.getUserStatistics(userId);
