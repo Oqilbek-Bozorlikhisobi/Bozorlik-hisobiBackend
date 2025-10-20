@@ -39,7 +39,20 @@ export class MarketRepository implements IMarketRepository {
       qb.andWhere('market.marketType.id = :marketTypeId', { marketTypeId });
     }
 
-    return await qb.getMany();
+    const markets = await qb.getMany();
+
+    // 🔽 Har bir market ichida usersni tartiblash
+    markets.forEach((m) => {
+      if (m.users?.length > 1) {
+        m.users.sort((a, b) => {
+          if (a.id === m.marketCreator) return -1;
+          if (b.id === m.marketCreator) return 1;
+          return 0;
+        });
+      }
+    });
+
+    return markets;
   }
 
   async findById(id: string): Promise<Market | null> {
@@ -63,7 +76,7 @@ export class MarketRepository implements IMarketRepository {
 
     if (!market) return null
 
-    if (market.users?.length) {
+    if (market.users?.length > 1) {
       market.users.sort((a, b) => {
         if (a.id === market.marketCreator) return -1;
         if (b.id === market.marketCreator) return 1;
