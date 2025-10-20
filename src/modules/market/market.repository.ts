@@ -33,7 +33,7 @@ export class MarketRepository implements IMarketRepository {
         return `EXISTS ${subQuery}`;
       })
       .setParameter('userId', userId)
-      .orderBy('marketList.createdAt', 'ASC');
+      .orderBy('marketList.createdAt', 'DESC');
 
     if (marketTypeId) {
       qb.andWhere('market.marketType.id = :marketTypeId', { marketTypeId });
@@ -43,7 +43,7 @@ export class MarketRepository implements IMarketRepository {
   }
 
   async findById(id: string): Promise<Market | null> {
-    return await this.marketRepository.findOne({
+    const market = await this.marketRepository.findOne({
       where: { id },
       relations: {
         users: true,
@@ -56,10 +56,22 @@ export class MarketRepository implements IMarketRepository {
       },
       order: {
         marketLists: {
-          createdAt: 'ASC',
+          createdAt: 'DESC',
         },
       },
     });
+
+    if (!market) return null
+
+    if (market.users?.length) {
+      market.users.sort((a, b) => {
+        if (a.id === market.marketCreator) return -1;
+        if (b.id === market.marketCreator) return 1;
+        return 0;
+      });
+    }
+
+    return market;
   }
 
   async update(entity: Market): Promise<Market> {

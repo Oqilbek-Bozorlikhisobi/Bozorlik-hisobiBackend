@@ -159,7 +159,10 @@ export class MarketService implements IMarketService {
     return new ResData<Market>('ok', 200, data);
   }
 
-  async sendMarketInvitation(addUserDto: AddUserDto): Promise<ResData<Market>> {
+  async sendMarketInvitation(
+    userId: string,
+    addUserDto: AddUserDto,
+  ): Promise<ResData<Market>> {
     const user = await this.userRepository.findByPhoneNumber(
       addUserDto.phoneNumber,
     );
@@ -169,6 +172,10 @@ export class MarketService implements IMarketService {
     const market = await this.marketRepository.findById(addUserDto.marketId);
     if (!market) {
       throw new MarketNotFoundException();
+    }
+
+    if (userId !== market.marketCreator) {
+      throw new ForbiddenException('Ruxsat etilmagan foydalanuvchi');
     }
 
     const alreadyExists = market.users?.some((u) => u.id === user.id) ?? false;

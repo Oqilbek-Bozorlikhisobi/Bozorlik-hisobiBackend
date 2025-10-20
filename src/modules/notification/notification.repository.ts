@@ -109,7 +109,15 @@ export class NotificationRepository implements INotificationRepository {
   async findById(id: string): Promise<Notification | null> {
     return await this.notificationRepository.findOne({
       where: { id },
-      relations: {},
+      relations: {
+        market: {
+          marketLists: true,
+          marketType: true,
+          users: true,
+        },
+        sender: true,
+        receiver: true,
+      },
     });
   }
 

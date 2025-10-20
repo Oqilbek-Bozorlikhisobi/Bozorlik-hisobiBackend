@@ -13,7 +13,7 @@ export interface IMarketService {
   findAll(id: string, marketTypeId?: string): Promise<ResData<Array<Market>>>;
   findOneById(id: string): Promise<ResData<Market>>;
   update(id: string, dto: UpdateMarketDto): Promise<ResData<Market>>;
-  sendMarketInvitation(addUserDto: AddUserDto): Promise<ResData<Market>>;
+  sendMarketInvitation(userId:string, addUserDto: AddUserDto): Promise<ResData<Market>>;
   delete(id: string): Promise<ResData<Market>>;
   createMarketByHistoryId(
     dto: CreateMarketByHistoryIdDto,

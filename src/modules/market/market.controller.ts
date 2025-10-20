@@ -71,8 +71,9 @@ export class MarketController {
 
   @Auth(RoleEnum.USER)
   @Patch('send/invitation')
-  sendMarketInvitation(@Body() addUserDto: AddUserDto) {
-    return this.marketService.sendMarketInvitation(addUserDto);
+  sendMarketInvitation(@Req() req: Request, @Body() addUserDto: AddUserDto) {
+    const payload: any = req?.user;
+    return this.marketService.sendMarketInvitation(payload?.id, addUserDto);
   }
 
   @Auth(RoleEnum.USER)
