@@ -24,6 +24,7 @@ import { Auth } from '../../common/decorator/auth.decorator';
 import { RoleEnum } from '../../common/enums/enum';
 import { SelfGuard } from '../shared/guards/self.guard';
 import { Request } from 'express';
+import { GetFcmTokenDto } from './dto/get-fcm-token.dto';
 
 @ApiTags('User')
 @Controller('user')
@@ -58,6 +59,13 @@ export class UserController {
       id,
       sendOtpAgainDto,
     );
+  }
+
+  @Auth(RoleEnum.USER)
+  @Patch('get-fcm-token')
+  getFcmToken(@Req() req: Request, @Body() dto: GetFcmTokenDto) {
+    const payload: any = req?.user;
+    return this.userService.getFcmToken(payload?.id, dto)
   }
 
   @UseGuards(SelfGuard)

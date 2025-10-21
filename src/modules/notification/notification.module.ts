@@ -6,9 +6,10 @@ import { Notification } from './entities/notification.entity';
 import { MarketModule } from '../market/market.module';
 import { UserModule } from '../user/user.module';
 import { NotificationRepository } from './notification.repository';
+import { FirebaseModule } from '../firebase/firebase.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Notification]), UserModule],
+  imports: [TypeOrmModule.forFeature([Notification]), UserModule, FirebaseModule],
   controllers: [NotificationController],
   providers: [
     { provide: 'INotificationService', useClass: NotificationService },

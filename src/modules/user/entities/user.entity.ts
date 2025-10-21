@@ -24,6 +24,9 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', name: 'hashed_refresh_token', nullable: true })
   hashedRefreshToken: string;
 
+  @Column({ type: 'varchar', name: 'fcm_token', nullable: true })
+  fcmToken?: string | null;
+
   @ManyToMany(() => Market, (markets) => markets.users)
   markets: Market[];
 

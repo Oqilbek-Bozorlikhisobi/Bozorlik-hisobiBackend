@@ -10,6 +10,7 @@ import { QuerySearchDto } from './dto/query-search.dto';
 import { NotificationNotFoundException } from './exeptions/notification.exeption';
 import { UserNotFound } from '../user/exeptions/user.esxeption';
 import { QuerySearchUserDto } from './dto/query-search-user.dto';
+import { FirebaseService } from '../firebase/firebase.service';
 
 @Injectable()
 export class NotificationService implements INotificationService {
@@ -18,6 +19,7 @@ export class NotificationService implements INotificationService {
     private readonly notificationRepository: INotificationRepository,
     @Inject('IUserRepository')
     private readonly userRepository: IUserRepository,
+    private readonly firebaseService: FirebaseService,
   ) {}
 
   async create(dto: CreateNotificationDto): Promise<ResData<Notification>> {
@@ -125,6 +127,30 @@ export class NotificationService implements INotificationService {
     await this.notificationRepository.delete(foundData);
 
     await this.notificationRepository.createMany(userNotifications);
+
+    const tokens = users.data
+      .map((u) => u.fcmToken)
+      .filter((t) => !!t) as string[];
+
+    // prepare title/body (tilga qarab tanlash mumkin — mana English)
+    const title =
+      foundData.titleUz ||
+      foundData.titleEn ||
+      foundData.titleRu ||
+      'Notification';
+    const body =
+      foundData.messageUz || foundData.messageEn || foundData.messageRu || '';
+
+    // send in background (await so‘rash optional) — here we await to capture errors
+    if (tokens.length > 0) {
+      try {
+        await this.firebaseService.sendToTokens(tokens, title, body, 'default');
+      } catch (err) {
+        // log, lekin yuz bergan vaziyatda ham user notification entitylari yaratiladi
+        console.error('Error sending FCM in makeGlobal:', err);
+      }
+    }
+
     return new ResData<string>('ok', 200, 'ok');
   }
 

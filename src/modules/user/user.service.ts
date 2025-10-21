@@ -26,6 +26,7 @@ import { VerifyOtpDto } from '../auth/dto/verify-otp.dto';
 import { OtpDidntSend } from '../auth/exeption/auth.exeption';
 import { SendOtpAgainDto } from '../auth/dto/send-otp-again.dto';
 import { RestorePasswordDto } from './dto/restore-password.dto';
+import { GetFcmTokenDto } from './dto/get-fcm-token.dto';
 
 @Injectable()
 export class UserService implements IUserService {
@@ -269,5 +270,15 @@ export class UserService implements IUserService {
     }
     const newData = await this.userRepository.delete(foundData);
     return new ResData<User>('Success', 200, newData);
+  }
+
+  async getFcmToken (userId:string, dto: GetFcmTokenDto): Promise<ResData<String>> {
+    const user = await this.userRepository.findOneById(userId)
+    if (!user) {
+      throw new UserNotFound()
+    }
+    user.fcmToken = dto.fcmToken
+    await this.userRepository.update(user)
+    return new ResData<String>('Success', 200, "ok");
   }
 }

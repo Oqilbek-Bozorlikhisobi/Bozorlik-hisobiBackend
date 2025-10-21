@@ -23,6 +23,7 @@ import { FeedbackModule } from './modules/feedback/feedback.module';
 import { UnitModule } from './modules/unit/unit.module';
 import { MarketTypeModule } from './modules/market_type/market_type.module';
 import { NotificationModule } from './modules/notification/notification.module';
+import { FirebaseModule } from './modules/firebase/firebase.module';
 
 @Module({
   imports: [
@@ -72,6 +73,7 @@ import { NotificationModule } from './modules/notification/notification.module';
     UnitModule,
     MarketTypeModule,
     NotificationModule,
+    FirebaseModule,
   ],
   providers: [JwtStrategy],
 })
