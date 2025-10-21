@@ -11,6 +11,7 @@ import { ProductsModule } from '../products/products.module';
 import { UnitModule } from '../unit/unit.module';
 import { MarketTypeModule } from '../market_type/market_type.module';
 import { NotificationModule } from '../notification/notification.module';
+import { FirebaseModule } from '../firebase/firebase.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { NotificationModule } from '../notification/notification.module';
     ProductsModule,
     UnitModule,
     MarketTypeModule,
-    NotificationModule
+    NotificationModule,
+    FirebaseModule
   ],
   controllers: [MarketController],
   providers: [

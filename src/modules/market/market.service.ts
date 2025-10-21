@@ -29,6 +29,7 @@ import { MarketTypeNotFoundExeption } from '../market_type/exeptions/market_type
 import { RespondToInviteDto } from './dto/respond-to-invite.dto';
 import { DeletedUserDto } from './dto/deleted-user.dto';
 import { CalculationType } from '../../common/enums/enum';
+import { FirebaseService } from '../firebase/firebase.service';
 
 @Injectable()
 export class MarketService implements IMarketService {
@@ -49,6 +50,7 @@ export class MarketService implements IMarketService {
     private readonly marketTypeRepository: IMarketTypeRepository,
     @Inject('INotificationRepository')
     private readonly notificationRepository: INotificationRepository,
+    private readonly firebaseService: FirebaseService,
   ) {}
 
   private async calculateMarket(market: Market): Promise<Market> {
@@ -214,6 +216,18 @@ export class MarketService implements IMarketService {
       note: addUserDto.note,
       isGlobal: false,
     });
+
+    try {
+      if (user.fcmToken) {
+        await this.firebaseService.sendToToken(
+          user.fcmToken,
+          'Marketga taklif',
+          addUserDto.note || "",
+        );
+      }
+    } catch (error) {
+      console.error('Error sending FCM in makeGlobal:', error);
+    }
 
     return new ResData<Market>('ok', 200, data);
   }
