@@ -77,16 +77,18 @@ export class HistoryRepository implements IHistoryRepository {
     monthlySpent: number;
     compareToPrevMonth: string;
   }> {
-    const qb = this.historyRepository
-      .createQueryBuilder('history')
-      .where(`history.users @> :user`, {
-        user: JSON.stringify([{ id: userId }]),
-      });
+    const userJson = JSON.stringify([{ id: userId }]);
 
-    // Jami
-    const totalCount = await qb.getCount();
-    const totalSpent = await qb
+    // Jami ma'lumotlar
+    const totalCount = await this.historyRepository
+      .createQueryBuilder('history')
+      .where(`history.users @> :user`, { user: userJson })
+      .getCount();
+
+    const totalSpent = await this.historyRepository
+      .createQueryBuilder('history')
       .select('SUM(history.totalPrice)', 'sum')
+      .where(`history.users @> :user`, { user: userJson })
       .getRawOne()
       .then((r) => Number(r.sum ?? 0));
 
@@ -96,9 +98,10 @@ export class HistoryRepository implements IHistoryRepository {
       new Date().getMonth(),
       1,
     );
+
     const currentMonthHistories = await this.historyRepository
       .createQueryBuilder('h')
-      .where(`h.users @> :user`, { user: JSON.stringify([{ id: userId }]) })
+      .where(`h.users @> :user`, { user: userJson })
       .andWhere(`h.createdAt >= :startOfMonth`, { startOfMonth })
       .getMany();
 
@@ -114,18 +117,18 @@ export class HistoryRepository implements IHistoryRepository {
       new Date().getMonth() - 1,
       1,
     );
-    const endOfPrevMonth = new Date(
+    const startOfCurrentMonth = new Date(
       new Date().getFullYear(),
       new Date().getMonth(),
-      0,
+      1,
     );
 
     const prevMonthHistories = await this.historyRepository
       .createQueryBuilder('h')
-      .where(`h.users @> :user`, { user: JSON.stringify([{ id: userId }]) })
-      .andWhere(`h.createdAt BETWEEN :start AND :end`, {
+      .where(`h.users @> :user`, { user: userJson })
+      .andWhere('h.createdAt >= :start AND h.createdAt < :end', {
         start: startOfPrevMonth,
-        end: endOfPrevMonth,
+        end: startOfCurrentMonth,
       })
       .getMany();
 
@@ -139,18 +142,12 @@ export class HistoryRepository implements IHistoryRepository {
         ? 0
         : ((currentMonthSpent - prevMonthSpent) / prevMonthSpent) * 100;
 
-    // Kasr bor yoki yo‘qligini aniqlaymiz
-    let formattedValue: string;
-
-    if (Number.isInteger(percentChange)) {
-      formattedValue =
-        percentChange > 0 ? `+${percentChange}` : `${percentChange}`;
-    } else {
-      formattedValue =
-        percentChange > 0
+    const formattedValue =
+      percentChange === 0
+        ? '0'
+        : percentChange > 0
           ? `+${percentChange.toFixed(1)}`
           : percentChange.toFixed(1);
-    }
 
     return {
       totalMarkets: totalCount,
