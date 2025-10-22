@@ -48,12 +48,12 @@ export class Notification extends BaseEntity {
   market: Market;
 
   // Kimga yuborilgan
-  @ManyToOne(() => User, { nullable: true })
+  @ManyToOne(() => User, { nullable: true, onDelete: 'CASCADE'})
   @JoinColumn({ name: 'receiver_id' })
   receiver: User;
 
   // Taklif qilgan odam
-  @ManyToOne(() => User, { nullable: true })
+  @ManyToOne(() => User, { nullable: true, onDelete: 'CASCADE'})
   @JoinColumn({ name: 'sender_id' })
   sender?: User | null;
 }
