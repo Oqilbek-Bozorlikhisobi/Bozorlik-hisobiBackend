@@ -53,7 +53,7 @@ export class Notification extends BaseEntity {
   receiver: User;
 
   // Taklif qilgan odam
-  @ManyToOne(() => User, { nullable: true, onDelete: 'CASCADE'})
+  @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL'})
   @JoinColumn({ name: 'sender_id' })
   sender?: User | null;
 }
