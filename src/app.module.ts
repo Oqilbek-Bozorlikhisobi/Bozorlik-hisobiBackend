@@ -24,6 +24,7 @@ import { UnitModule } from './modules/unit/unit.module';
 import { MarketTypeModule } from './modules/market_type/market_type.module';
 import { NotificationModule } from './modules/notification/notification.module';
 import { FirebaseModule } from './modules/firebase/firebase.module';
+import { VersionModule } from './modules/version/version.module';
 
 @Module({
   imports: [
@@ -74,6 +75,7 @@ import { FirebaseModule } from './modules/firebase/firebase.module';
     MarketTypeModule,
     NotificationModule,
     FirebaseModule,
+    VersionModule,
   ],
   providers: [JwtStrategy],
 })
