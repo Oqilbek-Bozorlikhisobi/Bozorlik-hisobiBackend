@@ -244,6 +244,11 @@ export class MarketService implements IMarketService {
     const target = pending.find((u) => u.id === userId);
     if (!target) throw new OfferNotFoundException();
 
+    const notification = await this.notificationRepository.findById(dto.notificationId)
+    if (!notification) {
+      throw new OfferNotFoundException();
+    }
+
     if (dto.accept) {
       const user = await this.userRepository.findOneById(userId);
       if (!user) {
@@ -254,8 +259,12 @@ export class MarketService implements IMarketService {
 
     market.pendingUsers = pending.filter((u) => u.id !== userId);
     await this.marketRepository.update(market);
+
+    notification.accept = dto.accept
+    await this.notificationRepository.update(notification)
+
     return new ResData(
-      `Taklif ${dto.accept ? 'qabul qilindi' : 'rad etildi'}`,
+      `Taklif ${dto.accept ? 'qabul qilindi ✅' : 'rad etildi ❌'}`,
       200,
       market,
     );

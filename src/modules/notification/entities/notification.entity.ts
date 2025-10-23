@@ -42,18 +42,24 @@ export class Notification extends BaseEntity {
   @Column({ type: 'varchar', name: 'note', nullable: true })
   note?: string;
 
+  @Column({ type: 'boolean', name: 'accept', nullable: true })
+  accept?: boolean | null;
+
   // Marketga bog‘liq notification (taklif uchun)
-  @ManyToOne(() => Market, { nullable: true, onDelete: 'CASCADE' })
+  @ManyToOne(() => Market, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
   @JoinColumn({ name: 'market_id' })
   market: Market;
 
   // Kimga yuborilgan
-  @ManyToOne(() => User, { nullable: true, onDelete: 'CASCADE'})
+  @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'receiver_id' })
   receiver: User;
 
   // Taklif qilgan odam
-  @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL'})
+  @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'sender_id' })
   sender?: User | null;
 }
