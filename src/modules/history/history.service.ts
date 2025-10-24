@@ -74,7 +74,7 @@ export class HistoryService implements IHistoryService {
     return new ResData<History>('ok', 200, foundData);
   }
 
-  async getUserStatistics(userId: string): Promise<
+  async getUserStatistics(userId: string, marketTypeId:string): Promise<
     ResData<{
       totalMarkets: number;
       totalSpent: number;
@@ -83,7 +83,7 @@ export class HistoryService implements IHistoryService {
       compareToPrevMonth: string;
     }>
   > {
-    const data = await this.historyRepository.getUserStatistics(userId);
+    const data = await this.historyRepository.getUserStatistics(userId, marketTypeId);
     return new ResData('ok', 200, data);
   }
 }

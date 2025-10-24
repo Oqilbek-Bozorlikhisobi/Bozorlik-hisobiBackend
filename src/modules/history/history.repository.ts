@@ -70,7 +70,10 @@ export class HistoryRepository implements IHistoryRepository {
     return await this.historyRepository.remove(entity);
   }
 
-  async getUserStatistics(userId: string): Promise<{
+  async getUserStatistics(
+    userId: string,
+    marketTypeId: string,
+  ): Promise<{
     totalMarkets: number;
     totalSpent: number;
     monthlyMarkets: number;
@@ -79,30 +82,37 @@ export class HistoryRepository implements IHistoryRepository {
   }> {
     const userJson = JSON.stringify([{ id: userId }]);
 
-    // Jami ma'lumotlar
-    const totalCount = await this.historyRepository
+    // 🧩 Bazaviy query
+    const baseQuery = this.historyRepository
       .createQueryBuilder('history')
-      .where(`history.users @> :user`, { user: userJson })
-      .getCount();
+      .where(`history.users @> :user`, { user: userJson });
 
-    const totalSpent = await this.historyRepository
-      .createQueryBuilder('history')
+    // 🎯 Agar marketTypeId berilgan bo‘lsa, filtrni qo‘shamiz
+    if (marketTypeId) {
+      baseQuery.andWhere(`history.market_type->>'id' = :marketTypeId`, {
+        marketTypeId,
+      });
+    }
+
+    // 🔹 Jami marketlar soni
+    const totalCount = await baseQuery.clone().getCount();
+
+    // 🔹 Jami sarflangan summa
+    const totalSpentResult = await baseQuery
+      .clone()
       .select('SUM(history.totalPrice)', 'sum')
-      .where(`history.users @> :user`, { user: userJson })
-      .getRawOne()
-      .then((r) => Number(r.sum ?? 0));
+      .getRawOne();
+    const totalSpent = Number(totalSpentResult.sum ?? 0);
 
-    // Oylik
+    // 🔹 Joriy oy (1-sanadan hozirgacha)
     const startOfMonth = new Date(
       new Date().getFullYear(),
       new Date().getMonth(),
       1,
     );
-
-    const currentMonthHistories = await this.historyRepository
-      .createQueryBuilder('h')
-      .where(`h.users @> :user`, { user: userJson })
-      .andWhere(`h.createdAt >= :startOfMonth`, { startOfMonth })
+    const currentMonthHistories = await baseQuery
+      .clone()
+      .andWhere(`history.createdAt >= :startOfMonth`, { startOfMonth })
       .getMany();
 
     const currentMonthCount = currentMonthHistories.length;
@@ -111,7 +121,7 @@ export class HistoryRepository implements IHistoryRepository {
       0,
     );
 
-    // O‘tgan oy
+    // 🔹 O‘tgan oy
     const startOfPrevMonth = new Date(
       new Date().getFullYear(),
       new Date().getMonth() - 1,
@@ -123,10 +133,9 @@ export class HistoryRepository implements IHistoryRepository {
       1,
     );
 
-    const prevMonthHistories = await this.historyRepository
-      .createQueryBuilder('h')
-      .where(`h.users @> :user`, { user: userJson })
-      .andWhere('h.createdAt >= :start AND h.createdAt < :end', {
+    const prevMonthHistories = await baseQuery
+      .clone()
+      .andWhere('history.createdAt >= :start AND history.createdAt < :end', {
         start: startOfPrevMonth,
         end: startOfCurrentMonth,
       })
@@ -137,6 +146,7 @@ export class HistoryRepository implements IHistoryRepository {
       0,
     );
 
+    // 🔹 Foiz o‘zgarishi
     const percentChange =
       prevMonthSpent === 0
         ? 0

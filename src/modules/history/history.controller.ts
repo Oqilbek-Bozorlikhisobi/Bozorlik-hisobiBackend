@@ -39,11 +39,13 @@ export class HistoryController {
     return this.historyService.getAllUserHistoriesById(payload.id, query);
   }
 
+  @ApiQuery({ name: 'marketTypeId', required: true })
   @Auth(RoleEnum.USER)
   @Get('statistics')
-  getUserStatistics(@Req() req: Request) {
+  @ApiQuery({ name: 'marketTypeId', required: true })
+  getUserStatistics(@Req() req: Request, @Query('marketTypeId') marketTypeId: string){
     const payload: any = req?.user;
-    return this.historyService.getUserStatistics(payload.id);
+    return this.historyService.getUserStatistics(payload.id, marketTypeId);
   }
 
   @Get(':id')
