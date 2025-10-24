@@ -19,6 +19,7 @@ export class FileService {
         'image/png': '.png',
         'image/gif': '.gif',
         'image/webp': '.webp',
+        'image/svg+xml': '.svg',
       };
 
       if (!mimeTypesMap[file.mimetype]) {
