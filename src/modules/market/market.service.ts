@@ -290,7 +290,15 @@ export class MarketService implements IMarketService {
     if (!user) {
       throw new UserNotFound();
     }
-    market.users = market.users.filter((u) => u.id !== dto.deletedUserId);
+    
+    market.users = (market.users || []).filter(
+      (u) => u.id !== dto.deletedUserId,
+    );
+
+    market.pendingUsers = (market.pendingUsers || []).filter(
+      (u) => u.id !== dto.deletedUserId,
+    );
+
     await this.marketRepository.update(market);
     return new ResData('ok', 200, market);
   }
