@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  OnModuleInit,
+} from '@nestjs/common';
 import * as admin from 'firebase-admin';
 
 @Injectable()
@@ -44,8 +49,8 @@ export class FirebaseService implements OnModuleInit {
     const message: admin.messaging.Message = {
       token,
       notification: { title, body },
-      android: { notification: { sound } },
-      apns: { payload: { aps: { sound } } },
+      android: { priority: 'high', notification: { sound } },
+      apns: { headers: { 'apns-priority': '10' }, payload: { aps: { sound } } },
       data: { click_action: 'FLUTTER_NOTIFICATION_CLICK' },
     };
     return admin.messaging().send(message);
@@ -66,8 +71,11 @@ export class FirebaseService implements OnModuleInit {
       const chunk = tokens.slice(i, i + CHUNK);
       const message: admin.messaging.MulticastMessage = {
         notification: { title, body },
-        android: { notification: { sound } },
-        apns: { payload: { aps: { sound } } },
+        android: { priority: 'high', notification: { sound } },
+        apns: {
+          headers: { 'apns-priority': '10' },
+          payload: { aps: { sound } },
+        },
         tokens: chunk,
       };
 
