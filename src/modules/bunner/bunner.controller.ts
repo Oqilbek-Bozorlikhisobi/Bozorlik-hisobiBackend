@@ -34,7 +34,10 @@ export class BunnerController {
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(
     FileFieldsInterceptor([
-      { name: 'file', maxCount: 1 },
+      { name: 'fileEn', maxCount: 1 },
+      { name: 'fileRu', maxCount: 1 },
+      { name: 'fileUz', maxCount: 1 },
+      { name: 'fileUzk', maxCount: 1 },
     ]),
   )
   @Auth(RoleEnum.ADMIN)
@@ -43,17 +46,22 @@ export class BunnerController {
     @Body() createBunnerDto: CreateBunnerDto,
     @UploadedFiles()
     files: {
-      file?: Express.Multer.File[];
+      fileEn: Express.Multer.File[];
+      fileRu: Express.Multer.File[];
+      fileUz: Express.Multer.File[];
+      fileUzk: Express.Multer.File[];
     },
   ) {
-    return this.bunnerService.create(
-      createBunnerDto,
-      files.file![0]
-    );
+    const normalized = {
+      fileEn: files.fileEn?.[0],
+      fileRu: files.fileRu?.[0],
+      fileUz: files.fileUz?.[0],
+      fileUzk: files.fileUzk?.[0],
+    };
+    return this.bunnerService.create(createBunnerDto, normalized);
   }
 
   @Get()
-  @ApiQuery({ name: 'search', required: false })
   @ApiQuery({ name: 'page', required: false })
   @ApiQuery({ name: 'limit', required: false })
   findAll(@Query() query: QuerySearchDto) {
@@ -73,7 +81,10 @@ export class BunnerController {
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(
     FileFieldsInterceptor([
-      { name: 'file', maxCount: 1 },
+      { name: 'fileEn', maxCount: 1 },
+      { name: 'fileRu', maxCount: 1 },
+      { name: 'fileUz', maxCount: 1 },
+      { name: 'fileUzk', maxCount: 1 },
     ]),
   )
   @Auth(RoleEnum.ADMIN)
@@ -83,14 +94,19 @@ export class BunnerController {
     @Body() updateBunnerDto: UpdateBunnerDto,
     @UploadedFiles()
     files: {
-      file?: Express.Multer.File[];
+      fileEn: Express.Multer.File[];
+      fileRu: Express.Multer.File[];
+      fileUz: Express.Multer.File[];
+      fileUzk: Express.Multer.File[];
     },
   ) {
-    return this.bunnerService.update(
-      id,
-      updateBunnerDto,
-      files.file?.[0]
-    );
+    const normalized = {
+      fileEn: files.fileEn?.[0],
+      fileRu: files.fileRu?.[0],
+      fileUz: files.fileUz?.[0],
+      fileUzk: files.fileUzk?.[0],
+    };
+    return this.bunnerService.update(id, updateBunnerDto, normalized);
   }
 
   @Auth(RoleEnum.ADMIN)

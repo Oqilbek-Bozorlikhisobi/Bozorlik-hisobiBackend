@@ -1,52 +1,63 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateBunnerDto {
   @ApiProperty({
-    description: 'name in english',
-    example: 'new',
+    description:
+      'png, ppt, wbep formatdagi fayl, faqat bitta rasm yuklanadi inglis tilida',
+    type: 'string',
+    format: 'binary',
+    required: true,
   })
-  @IsString()
-  nameEn: string;
-
-  @ApiProperty({
-    description: 'name in russian',
-    example: 'новый',
-  })
-  @IsString()
-  nameRu: string;
-
-  @ApiProperty({
-    description: 'name in uzbek',
-    example: 'yangi',
-  })
-  @IsString()
-  nameUz: string;
-
-  @ApiProperty({
-    description: 'name in uzbek kiril',
-    example: 'янги',
-  })
-  @IsString()
-  nameUzk: string;
-
-  @ApiProperty({
-    description: "Batafsil uchun link",
-    example: "https://google.com"
-  })
-  @IsString()
-  link:string
-
   @IsOptional()
-  image: string;
+  fileEn: string;
 
   @ApiProperty({
     description:
       'png, ppt, wbep formatdagi fayl, faqat bitta rasm yuklanadi inglis tilida',
     type: 'string',
     format: 'binary',
-    required: false,
+    required: true,
   })
   @IsOptional()
-  file?: Express.Multer.File;
+  fileRu: string;
+
+  @ApiProperty({
+    description:
+      'png, ppt, wbep formatdagi fayl, faqat bitta rasm yuklanadi inglis tilida',
+    type: 'string',
+    format: 'binary',
+    required: true,
+  })
+  @IsOptional()
+  fileUz: string;
+
+  @ApiProperty({
+    description:
+      'png, ppt, wbep formatdagi fayl, faqat bitta rasm yuklanadi inglis tilida',
+    type: 'string',
+    format: 'binary',
+    required: true,
+  })
+  @IsOptional()
+  fileUzk: string;
+
+  @ApiProperty({
+    description: 'Batafsil uchun link',
+    example: 'https://google.com',
+  })
+  @IsString()
+  link: string;
+
+  @IsOptional()
+  imageEn: string;
+
+  @IsOptional()
+  imageRu: string;
+
+  @IsOptional()
+  imageUz: string;
+
+  @IsOptional()
+  imageUzk: string;
 }

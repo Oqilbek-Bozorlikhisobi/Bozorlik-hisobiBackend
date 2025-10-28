@@ -18,27 +18,18 @@ export class BunnerRepository implements IBunnerRepository {
   async findAll(
     query: QuerySearchDto,
   ): Promise<{ data: Bunner[]; total: number; page: number; limit: number }> {
-    const { search = '', page = 1, limit } = query;
-
-    const where = [
-      { nameEn: ILike(`%${search}%`) },
-      { nameRu: ILike(`%${search}%`) },
-      { nameUz: ILike(`%${search}%`) },
-      { nameUzk: ILike(`%${search}%`) },
-    ];
+    const { page = 1, limit } = query;
 
     let data: Bunner[];
     let total: number;
 
     if (limit && limit > 0) {
       [data, total] = await this.bunnerRepository.findAndCount({
-        where,
         skip: (page - 1) * limit,
         take: limit,
       });
     } else {
       [data, total] = await this.bunnerRepository.findAndCount({
-        where,
       });
     }
 

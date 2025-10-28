@@ -21,13 +21,24 @@ export class BunnerService implements IBunnerService {
 
   async create(
     dto: CreateBunnerDto,
-    file: Express.Multer.File,
+    files: {
+      fileEn?: Express.Multer.File;
+      fileRu?: Express.Multer.File;
+      fileUz?: Express.Multer.File;
+      fileUzk?: Express.Multer.File;
+    },
   ): Promise<ResData<Bunner>> {
-    if (!file) {
+    if (!files.fileEn || !files.fileRu || !files.fileUz || !files.fileUzk) {
       throw new FileIsMissinExeption();
     }
-    const fileName = await this.fileService.saveFile(file);
-    dto.image = `${process.env.BASE_URL}files/${fileName}`;
+    const fileNameEn = await this.fileService.saveFile(files.fileEn);
+    const fileNameRu = await this.fileService.saveFile(files.fileRu);
+    const fileNameUz = await this.fileService.saveFile(files.fileUz);
+    const fileNameUzk = await this.fileService.saveFile(files.fileUzk);
+    dto.imageEn = `${process.env.BASE_URL}files/${fileNameEn}`;
+    dto.imageRu = `${process.env.BASE_URL}files/${fileNameRu}`;
+    dto.imageUz = `${process.env.BASE_URL}files/${fileNameUz}`;
+    dto.imageUzk = `${process.env.BASE_URL}files/${fileNameUzk}`;
     const newBunner = new Bunner();
     Object.assign(newBunner, dto);
     const data = await this.bunnerRepository.create(newBunner);
@@ -58,25 +69,57 @@ export class BunnerService implements IBunnerService {
   }
 
   async findAllWithOutPagination(): Promise<ResData<Bunner[]>> {
-    const data = await this.bunnerRepository.findAllWithOutPagination()
+    const data = await this.bunnerRepository.findAllWithOutPagination();
     return new ResData<Bunner[]>('ok', 200, data);
   }
 
   async update(
     id: string,
     dto: UpdateBunnerDto,
-    file?: Express.Multer.File,
+    files?: {
+      fileEn?: Express.Multer.File;
+      fileRu?: Express.Multer.File;
+      fileUz?: Express.Multer.File;
+      fileUzk?: Express.Multer.File;
+    },
   ): Promise<ResData<Bunner>> {
     const foundData = await this.bunnerRepository.findById(id);
     if (!foundData) {
       throw new BunnerNotFoundException();
     }
-    if (file) {
-      const fileName = path.basename(foundData.image);
-      await this.fileService.deleteFile(fileName);
-      const newFileName = await this.fileService.saveFile(file);
-      dto.image = `${process.env.BASE_URL}files/${newFileName}`;
+
+    // EN
+    if (files?.fileEn) {
+      const oldFile = path.basename(foundData.imageEn);
+      await this.fileService.deleteFile(oldFile);
+      const newFile = await this.fileService.saveFile(files.fileEn);
+      dto.imageEn = `${process.env.BASE_URL}files/${newFile}`;
     }
+
+    // RU
+    if (files?.fileRu) {
+      const oldFile = path.basename(foundData.imageRu);
+      await this.fileService.deleteFile(oldFile);
+      const newFile = await this.fileService.saveFile(files.fileRu);
+      dto.imageRu = `${process.env.BASE_URL}files/${newFile}`;
+    }
+
+    // UZ
+    if (files?.fileUz) {
+      const oldFile = path.basename(foundData.imageUz);
+      await this.fileService.deleteFile(oldFile);
+      const newFile = await this.fileService.saveFile(files.fileUz);
+      dto.imageUz = `${process.env.BASE_URL}files/${newFile}`;
+    }
+
+    // UZK
+    if (files?.fileUzk) {
+      const oldFile = path.basename(foundData.imageUzk);
+      await this.fileService.deleteFile(oldFile);
+      const newFile = await this.fileService.saveFile(files.fileUzk);
+      dto.imageUzk = `${process.env.BASE_URL}files/${newFile}`;
+    }
+
     Object.assign(foundData, dto);
     const data = await this.bunnerRepository.update(foundData);
     return new ResData<Bunner>('ok', 200, data);
@@ -87,8 +130,14 @@ export class BunnerService implements IBunnerService {
     if (!foundData) {
       throw new BunnerNotFoundException();
     }
-    const fileName = path.basename(foundData.image);
-    await this.fileService.deleteFile(fileName);
+    const fileNameEn = path.basename(foundData.imageEn);
+    const fileNameRu = path.basename(foundData.imageRu);
+    const fileNameUz = path.basename(foundData.imageUz);
+    const fileNameUzk = path.basename(foundData.imageUzk);
+    await this.fileService.deleteFile(fileNameEn);
+    await this.fileService.deleteFile(fileNameRu);
+    await this.fileService.deleteFile(fileNameUz);
+    await this.fileService.deleteFile(fileNameUzk);
     await this.bunnerRepository.delete(foundData);
     return new ResData<Bunner>('Bunner deleted successfully', 200, foundData);
   }

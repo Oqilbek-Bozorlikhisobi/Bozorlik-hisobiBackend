@@ -3,12 +3,12 @@ import { IsOptional, IsNumber, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class QuerySearchDto {
-  @ApiPropertyOptional({
-    description: 'Title bo‘yicha qidiruv (EN, RU, UZ, UZK)',
-  })
-  @IsOptional()
-  @IsString()
-  search?: string;
+  // @ApiPropertyOptional({
+  //   description: 'Title bo‘yicha qidiruv (EN, RU, UZ, UZK)',
+  // })
+  // @IsOptional()
+  // @IsString()
+  // search?: string;
 
   @ApiPropertyOptional({
     description: 'Nechanchi sahifa',
