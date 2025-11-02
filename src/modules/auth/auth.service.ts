@@ -160,7 +160,7 @@ export class AuthService {
         await this.smsService.sendSms(
           data.phoneNumber,
           String(OTP),
-          'MARKET APP ilovasida ro‘yxatdan o‘tish uchun tasdiqlash kodi:',
+          'BOZOR APP ilovasida ro‘yxatdan o‘tish uchun tasdiqlash kodi:',
         );
       } catch (error) {
         console.log(error);
@@ -292,9 +292,9 @@ export class AuthService {
 
     let smsText = '';
     if (details.newPassword) {
-      smsText = 'MARKET APP ilovasining parolini tiklash uchun kod:';
+      smsText = 'BOZOR APP ilovasining parolini tiklash uchun kod:';
     } else {
-      smsText = 'MARKET APP ilovasida ro‘yxatdan o‘tish uchun tasdiqlash kodi:';
+      smsText = 'BOZOR APP ilovasida ro‘yxatdan o‘tish uchun tasdiqlash kodi:';
     }
 
     try {
@@ -338,7 +338,7 @@ export class AuthService {
       await this.smsService.sendSms(
         data.phoneNumber,
         String(OTP),
-        'MARKET APP ilovasida ro‘yxatdan o‘tish uchun tasdiqlash kodi:',
+        'BOZOR APP ilovasida ro‘yxatdan o‘tish uchun tasdiqlash kodi:',
       );
     } catch (error) {
       console.log(error);
@@ -497,7 +497,7 @@ export class AuthService {
       await this.smsService.sendSms(
         data.phoneNumber,
         String(OTP),
-        'MARKET APP ilovasining parolini tiklash uchun kod:',
+        'BOZOR APP ilovasining parolini tiklash uchun kod:',
       );
     } catch (error) {
       console.log(error);
