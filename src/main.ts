@@ -9,9 +9,7 @@ async function bootstrap() {
 
   // Add CORS configuration here
   app.enableCors({
-    origin: (origin, callback) => {
-      return callback(null, true); // Hammasiga ruxsat beradi
-    },
+    origin: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     credentials: true,
   });
@@ -75,7 +73,7 @@ async function bootstrap() {
 
   await app.listen(
     port,
-    configService.get<string>('app.host', '0.0.0.0'),
+    configService.get<string>('app.host', 'localhost'),
     () => {
       console.log(`📦 Bozorlik Backend is running on port ${port}`);
       console.log(
