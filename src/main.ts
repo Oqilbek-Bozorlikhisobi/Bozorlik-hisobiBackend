@@ -75,7 +75,7 @@ async function bootstrap() {
 
   await app.listen(
     port,
-    configService.get<string>('app.host', 'localhost'),
+    configService.get<string>('app.host', '0.0.0.0'),
     () => {
       console.log(`📦 Bozorlik Backend is running on port ${port}`);
       console.log(
