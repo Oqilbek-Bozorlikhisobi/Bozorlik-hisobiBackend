@@ -9,7 +9,12 @@ async function bootstrap() {
 
   // Add CORS configuration here
   app.enableCors({
-    origin: true,
+    origin: [
+      'https://www.bozorapp.uz/',
+      'https://marketveb.uz',
+      'http://localhost:3000',
+      'https://market-admin-beta.vercel.app/',
+    ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     credentials: true,
   });
