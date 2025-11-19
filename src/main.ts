@@ -9,7 +9,9 @@ async function bootstrap() {
 
   // Add CORS configuration here
   app.enableCors({
-    origin: true,
+    origin: (origin, callback) => {
+      return callback(null, true); // Hammasiga ruxsat beradi
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     credentials: true,
   });
