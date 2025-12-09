@@ -260,8 +260,9 @@ export class MarketService implements IMarketService {
     market.pendingUsers = pending.filter((u) => u.id !== userId);
     await this.marketRepository.update(market);
 
-    notification.accept = dto.accept
-    await this.notificationRepository.update(notification)
+    notification.accept =
+      dto.accept === true ? true : dto.accept === false ? false : null;
+    await this.notificationRepository.update(notification);
 
     return new ResData(
       `Taklif ${dto.accept ? 'qabul qilindi ✅' : 'rad etildi ❌'}`,
